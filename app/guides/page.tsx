@@ -4,23 +4,20 @@ import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { Breadcrumbs } from "@/components/content/breadcrumbs";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { getPublishedArticles } from "@/lib/db/loaders/article";
 
 export const metadata: Metadata = buildMetadata({
   title: "Guides — editorial research and explainers",
-  description: "Research explainers, how-to guides, and category context from the PeptideNexa editorial team.",
+  description:
+    "Research explainers, how-to guides, and category context from the PeptideNexa editorial team.",
   path: "/guides",
 });
 
-const guides = [
-  {
-    slug: "calm-guide-to-peptide-research",
-    title: "A calm guide to peptide research",
-    excerpt:
-      "How to read public peptide research without getting hype-pilled — and what to look for when evaluating a provider.",
-  },
-];
+export const revalidate = 300;
 
-export default function GuidesIndexPage() {
+export default async function GuidesIndexPage() {
+  const articles = await getPublishedArticles();
+
   return (
     <>
       <header className="border-b border-line bg-paper">
@@ -33,16 +30,28 @@ export default function GuidesIndexPage() {
         </Container>
       </header>
       <Container className="py-12">
-        <ul className="divide-y divide-line border-y border-line">
-          {guides.map((guide) => (
-            <li key={guide.slug} className="py-6">
-              <Link href={`/guides/${guide.slug}`} className="group block">
-                <h2 className="font-serif text-2xl text-ink group-hover:text-brand">{guide.title}</h2>
-                <p className="mt-2 max-w-readable text-ink-muted">{guide.excerpt}</p>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        {articles.length === 0 ? (
+          <p className="max-w-readable text-sm text-ink-muted">
+            New guides are being prepared. Check back shortly.
+          </p>
+        ) : (
+          <ul className="divide-y divide-line border-y border-line">
+            {articles.map((article) => (
+              <li key={article.slug} className="py-6">
+                <Link href={`/guides/${article.slug}`} className="group block">
+                  <h2 className="font-serif text-2xl text-ink group-hover:text-brand">
+                    {article.title}
+                  </h2>
+                  <p className="mt-2 max-w-readable text-ink-muted">{article.excerpt}</p>
+                  <p className="mt-2 text-xs text-ink-subtle">
+                    by {article.author.name}
+                    {article.author.credentials ? `, ${article.author.credentials}` : ""}
+                  </p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        )}
       </Container>
     </>
   );

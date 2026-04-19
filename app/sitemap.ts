@@ -3,6 +3,7 @@ import { absoluteUrl } from "@/lib/utils";
 import { getPublishedPeptideSlugs } from "@/lib/db/loaders/peptide";
 import { getListedProviderSlugs } from "@/lib/db/loaders/provider";
 import { getAllCategorySlugs } from "@/lib/db/loaders/category";
+import { getPublishedArticleSlugs } from "@/lib/db/loaders/article";
 
 // Single sitemap for MVP scale. Partition into multiple when we cross ~1k URLs.
 // The DB loaders catch their own errors and return empty arrays, so a missing
@@ -27,10 +28,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: absoluteUrl("/legal/affiliate-disclosure"), lastModified: now, changeFrequency: "yearly", priority: 0.2 },
   ];
 
-  const [peptideSlugs, providerSlugs, categorySlugs] = await Promise.all([
+  const [peptideSlugs, providerSlugs, categorySlugs, articleSlugs] = await Promise.all([
     getPublishedPeptideSlugs(),
     getListedProviderSlugs(),
     getAllCategorySlugs(),
+    getPublishedArticleSlugs(),
   ]);
 
   const peptides: MetadataRoute.Sitemap = peptideSlugs.map((slug) => ({
@@ -54,5 +56,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
-  return [...staticEntries, ...peptides, ...providers, ...categories];
+  const articles: MetadataRoute.Sitemap = articleSlugs.map((slug) => ({
+    url: absoluteUrl(`/guides/${slug}`),
+    lastModified: now,
+    changeFrequency: "monthly",
+    priority: 0.7,
+  }));
+
+  return [...staticEntries, ...peptides, ...providers, ...categories, ...articles];
 }

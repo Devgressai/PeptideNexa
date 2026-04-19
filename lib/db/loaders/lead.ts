@@ -1,7 +1,7 @@
 import "server-only";
+import { ProviderStatus } from "@prisma/client";
 import { prisma } from "@/lib/db/client";
 import type { ProviderSummary } from "@/lib/content/types";
-import { searchProviders } from "@/lib/db/loaders/provider";
 
 export type LeadResult = {
   id: string;
@@ -40,10 +40,55 @@ export async function getLeadResult(token: string): Promise<LeadResult | null> {
   if (!lead) return null;
 
   // matchedProviderIds is persisted as provider slugs (see leads route).
-  // Resolve them into full ProviderSummary rows via the directory loader, so
-  // the result page presents the same shape as any other listing.
-  const all = await searchProviders({});
-  const bySlug = new Map(all.map((p) => [p.slug, p]));
+  // Fetch just those slugs rather than scanning the full directory, then
+  // re-order the result to preserve the original ranking.
+  const providerRows =
+    lead.matchedProviderIds.length === 0
+      ? []
+      : await prisma.provider
+          .findMany({
+            where: {
+              slug: { in: lead.matchedProviderIds },
+              status: { in: [ProviderStatus.LISTED, ProviderStatus.FEATURED] },
+            },
+            select: {
+              slug: true,
+              name: true,
+              type: true,
+              status: true,
+              verified: true,
+              city: true,
+              state: true,
+              servesStates: true,
+              shortDescription: true,
+              priceTier: true,
+              peptides: { select: { peptide: { select: { slug: true } } } },
+            },
+          })
+          .catch((err) => {
+            console.error("[loaders/lead] provider hydration failed", err);
+            return [];
+          });
+
+  const bySlug = new Map<string, ProviderSummary>(
+    providerRows.map((row) => [
+      row.slug,
+      {
+        slug: row.slug,
+        name: row.name,
+        type: row.type,
+        verified: row.verified,
+        featured: row.status === ProviderStatus.FEATURED,
+        city: row.city,
+        state: row.state,
+        servesStates: row.servesStates,
+        shortDescription: row.shortDescription,
+        priceTier: row.priceTier,
+        peptideSlugs: row.peptides.map((p) => p.peptide.slug),
+      },
+    ]),
+  );
+
   const matches = lead.matchedProviderIds
     .map((slug) => bySlug.get(slug))
     .filter((p): p is ProviderSummary => Boolean(p));

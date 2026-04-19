@@ -104,6 +104,62 @@ async function main() {
     },
   });
 
+  const editorial = await prisma.author.upsert({
+    where: { slug: "editorial" },
+    update: {},
+    create: {
+      slug: "editorial",
+      name: "PeptideNexa Editorial",
+      credentials: "Staff",
+      bio: "The in-house editorial team at PeptideNexa.",
+    },
+  });
+
+  const articleBody = [
+    "Peptide research is having a moment, and most of what gets shared online is either hype or fear.",
+    "",
+    "<Callout tone=\"info\" title=\"How to read the rest of this guide\">",
+    "  We summarize the public literature, cite primary sources where they exist, and mark anything speculative as such.",
+    "</Callout>",
+    "",
+    "## Start with the mechanism",
+    "",
+    "When evaluating any peptide, the first question is mechanism. What does it do at the receptor level, and which tissues express those receptors? Mechanism tells you what questions to ask — of the research and of the provider.",
+    "",
+    "## Evaluate the evidence ladder",
+    "",
+    "- In vitro studies answer *can this happen at all*.",
+    "- Animal studies answer *does it happen in a living system*.",
+    "- Human trials answer *does it help real people, at doses a clinician would use*.",
+    "",
+    "Most peptides sold online live in the first two rungs. That doesn't mean they're useless — it means the confidence interval is wide.",
+    "",
+    "## Evaluating a provider",
+    "",
+    "A credible provider will:",
+    "",
+    "1. Explain what the research does and does not support.",
+    "2. Discuss compounding pharmacy sourcing and sterility.",
+    "3. Insist on follow-up, not just a one-shot prescription.",
+    "",
+    "<DisclaimerBanner />",
+  ].join("\n");
+
+  await prisma.article.upsert({
+    where: { slug: "calm-guide-to-peptide-research" },
+    update: { bodyMdx: articleBody },
+    create: {
+      slug: "calm-guide-to-peptide-research",
+      title: "A calm guide to peptide research",
+      excerpt:
+        "How to read public peptide research without getting hype-pilled — and what to look for when evaluating a provider.",
+      bodyMdx: articleBody,
+      authorId: editorial.id,
+      status: ContentStatus.PUBLISHED,
+      publishedAt: new Date(),
+    },
+  });
+
   console.log("✅ seed complete");
 }
 
