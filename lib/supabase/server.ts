@@ -1,6 +1,7 @@
 import "server-only";
 import { cookies } from "next/headers";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
+import { createClient } from "@supabase/supabase-js";
 
 /**
  * Server-side Supabase client for use in server components, route handlers,
@@ -55,9 +56,6 @@ export function createSupabaseServiceClient() {
     );
   }
 
-  // Lazy import to avoid pulling the base client when only SSR is needed.
-  // eslint-disable-next-line @typescript-eslint/no-require-imports
-  const { createClient } = require("@supabase/supabase-js") as typeof import("@supabase/supabase-js");
   return createClient(url, serviceKey, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
