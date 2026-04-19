@@ -3,6 +3,7 @@ import { ProviderStatus, type Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db/client";
 import type { ProviderSummary } from "@/lib/content/types";
 import type { LeadInput } from "@/lib/validators/lead";
+import { compareProviderRanking } from "./ranking";
 
 type ProviderMatchRow = Prisma.ProviderGetPayload<{
   include: { peptides: { select: { peptide: { select: { slug: true } } } } };
@@ -70,22 +71,7 @@ export async function matchProviders(
       return [] as ProviderMatchRow[];
     });
 
-  return rows.sort(compareRankingRows).slice(0, limit).map(toSummary);
-}
-
-function compareRankingRows(a: ProviderMatchRow, b: ProviderMatchRow): number {
-  // 1. Featured above listed.
-  const aFeatured = a.status === ProviderStatus.FEATURED;
-  const bFeatured = b.status === ProviderStatus.FEATURED;
-  if (aFeatured !== bFeatured) return aFeatured ? -1 : 1;
-  // 2. Verified above unverified.
-  if (a.verified !== b.verified) return a.verified ? -1 : 1;
-  // 3. Most-recently-verified first (null = never verified, sort last).
-  const aTs = a.lastVerifiedAt?.getTime() ?? 0;
-  const bTs = b.lastVerifiedAt?.getTime() ?? 0;
-  if (aTs !== bTs) return bTs - aTs;
-  // 4. Name alphabetical — deterministic final tiebreaker.
-  return a.name.localeCompare(b.name);
+  return rows.sort(compareProviderRanking).slice(0, limit).map(toSummary);
 }
 
 function toSummary(row: ProviderMatchRow): ProviderSummary {
