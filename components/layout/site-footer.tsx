@@ -40,8 +40,25 @@ export function SiteFooter() {
       <Container className="py-14">
         <div className="grid gap-10 md:grid-cols-4">
           <div>
-            <div className="flex items-center gap-2">
-              <span aria-hidden className="h-6 w-6 rounded-sm bg-brand" />
+            <div className="flex items-center gap-2.5">
+              <svg
+                aria-hidden
+                viewBox="0 0 24 24"
+                className="h-6 w-6 text-brand"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="7" cy="8" r="2" fill="currentColor" />
+                <circle cx="17" cy="16" r="2" fill="currentColor" />
+                <circle cx="7" cy="16" r="1.5" />
+                <circle cx="17" cy="8" r="1.5" />
+                <line x1="7" y1="8" x2="17" y2="8" />
+                <line x1="7" y1="16" x2="17" y2="16" />
+                <line x1="7" y1="8" x2="17" y2="16" />
+              </svg>
               <span className="font-serif text-lg tracking-tight text-ink">PeptideNexa</span>
             </div>
             <p className="mt-4 max-w-xs text-sm text-ink-muted">

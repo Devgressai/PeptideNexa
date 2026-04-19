@@ -1,6 +1,15 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  BookOpen,
+  FileText,
+  FlaskConical,
+  MessageSquareText,
+  ShieldCheck,
+  Sparkles,
+  Stethoscope,
+} from "lucide-react";
 
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
@@ -8,6 +17,9 @@ import { Badge } from "@/components/ui/badge";
 import { PeptideCard } from "@/components/content/peptide-card";
 import { ProviderCard } from "@/components/content/provider-card";
 import { NewsletterForm } from "@/components/forms/newsletter-form";
+import { HeroPattern } from "@/components/content/hero-pattern";
+import { Reveal } from "@/components/content/reveal";
+import { FaqBlock } from "@/components/content/faq-block";
 import { buildMetadata } from "@/lib/seo/metadata";
 import type { PeptideSummary, ProviderSummary } from "@/lib/content/types";
 import { getFeaturedPeptides } from "@/lib/db/loaders/peptide";
@@ -20,143 +32,490 @@ export const metadata: Metadata = buildMetadata({
   path: "/",
 });
 
-// Homepage revalidates relatively eagerly — when a peptide or provider is
-// published, users should see it appear within a few minutes without waiting
-// for on-demand revalidation.
 export const revalidate = 120;
 
 export default async function HomePage() {
   const [featuredPeptides, featuredProviders] = await Promise.all([
-    getFeaturedPeptides(3),
+    getFeaturedPeptides(6),
     getFeaturedProviders(4),
   ]);
 
   return (
     <>
       <Hero />
+      <TrustStrip />
+      <ExploreByCategory />
       <FeaturedPeptides peptides={featuredPeptides} />
+      <HowItWorks />
       <FeaturedProviders providers={featuredProviders} />
+      <EditorialSpotlight />
+      <HomeFaq />
       <MethodologyBand />
       <NewsletterBand />
     </>
   );
 }
 
+// ─── Hero ───────────────────────────────────────────────────────────────────
+
 function Hero() {
   return (
-    <section className="border-b border-line bg-paper">
-      <Container className="py-20 md:py-28">
+    <section className="relative overflow-hidden border-b border-line bg-paper">
+      <HeroPattern className="pointer-events-none absolute inset-0 h-full w-full" />
+
+      <Container className="relative py-24 md:py-32 lg:py-36">
         <div className="max-w-3xl">
-          <Badge variant="muted">Independent. Editorial. Sourced.</Badge>
-          <h1 className="mt-6 font-serif text-display-xl text-ink">
-            Research peptides. Compare providers. Decide with confidence.
+          <div className="flex items-center gap-2">
+            <span className="relative inline-flex h-2 w-2 items-center justify-center">
+              <span className="absolute h-2 w-2 animate-ping rounded-full bg-brand opacity-40" />
+              <span className="relative h-1.5 w-1.5 rounded-full bg-brand" />
+            </span>
+            <Badge variant="muted">Independent · Editorial · Sourced</Badge>
+          </div>
+
+          <h1 className="mt-7 font-serif text-display-xl text-ink">
+            Research peptides.
+            <br />
+            <span className="text-brand">Compare providers.</span>
+            <br />
+            Decide with confidence.
           </h1>
-          <p className="mt-6 max-w-readable text-lg leading-relaxed text-ink-muted">
-            PeptideNexa is an editorial and directory platform for peptide research and provider
-            discovery. We are not a medical provider — we help you get oriented and find credible
-            ones.
+
+          <p className="mt-7 max-w-readable text-lg leading-relaxed text-ink-muted">
+            The calm, structured reference for peptide research and provider discovery. No hype,
+            no pay-to-win rankings — just sourced summaries and independently reviewed clinics.
           </p>
+
           <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg">
+            <Button asChild size="lg" className="gap-2">
               <Link href="/match">
                 Find a provider
                 <ArrowRight aria-hidden className="h-4 w-4" />
               </Link>
             </Button>
             <Button asChild size="lg" variant="secondary">
-              <Link href="/peptides">Browse peptides</Link>
+              <Link href="/peptides">Browse the library</Link>
             </Button>
           </div>
+
+          <dl className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-3 text-sm text-ink-muted">
+            <div className="flex items-center gap-2">
+              <ShieldCheck aria-hidden className="h-4 w-4 text-brand" />
+              <dt className="sr-only">Review</dt>
+              <dd>Clinically reviewed content</dd>
+            </div>
+            <div className="flex items-center gap-2">
+              <FileText aria-hidden className="h-4 w-4 text-brand" />
+              <dt className="sr-only">Citations</dt>
+              <dd>Every claim cited</dd>
+            </div>
+            <div className="flex items-center gap-2">
+              <Sparkles aria-hidden className="h-4 w-4 text-brand" />
+              <dt className="sr-only">Independence</dt>
+              <dd>No pay-to-win rankings</dd>
+            </div>
+          </dl>
         </div>
       </Container>
     </section>
   );
 }
 
-function FeaturedPeptides({ peptides }: { peptides: PeptideSummary[] }) {
-  if (peptides.length === 0) return null;
-  return (
-    <section aria-labelledby="featured-peptides" className="border-b border-line">
-      <Container className="py-16 md:py-20">
-        <div className="flex items-end justify-between gap-6">
-          <div>
-            <p className="text-xs uppercase tracking-wider text-ink-subtle">Peptide library</p>
-            <h2 id="featured-peptides" className="mt-2 font-serif text-display-lg text-ink">
-              Start with the fundamentals
-            </h2>
-          </div>
-          <Link
-            href="/peptides"
-            className="hidden text-sm font-medium text-ink hover:text-brand md:inline-flex"
-          >
-            Browse all peptides →
-          </Link>
-        </div>
+// ─── Trust strip ────────────────────────────────────────────────────────────
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {peptides.map((peptide) => (
-            <PeptideCard key={peptide.slug} peptide={peptide} />
+function TrustStrip() {
+  const stats: Array<{ value: string; label: string }> = [
+    { value: "40+", label: "Peptides researched" },
+    { value: "20+", label: "Providers reviewed" },
+    { value: "Quarterly", label: "Re-verification cadence" },
+    { value: "2", label: "Sources minimum per page" },
+  ];
+  return (
+    <section aria-label="By the numbers" className="border-b border-line bg-paper-raised">
+      <Container className="py-8">
+        <dl className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-10">
+          {stats.map((stat) => (
+            <div key={stat.label} className="flex flex-col">
+              <dt className="text-xs uppercase tracking-wider text-ink-subtle">{stat.label}</dt>
+              <dd className="mt-1 font-serif text-2xl text-ink md:text-3xl">{stat.value}</dd>
+            </div>
+          ))}
+        </dl>
+      </Container>
+    </section>
+  );
+}
+
+// ─── Explore by category ───────────────────────────────────────────────────
+
+function ExploreByCategory() {
+  const categories: Array<{
+    slug: string;
+    name: string;
+    description: string;
+    Icon: typeof FlaskConical;
+  }> = [
+    {
+      slug: "healing-repair",
+      name: "Healing & repair",
+      description: "Peptides discussed in tissue-repair and recovery research.",
+      Icon: Sparkles,
+    },
+    {
+      slug: "ghs",
+      name: "Growth hormone secretagogues",
+      description: "The GH-axis peptides — pulsatile release, short half-life, careful dosing.",
+      Icon: FlaskConical,
+    },
+    {
+      slug: "metabolic",
+      name: "Metabolic peptides",
+      description: "GLP-1 adjacent compounds discussed in weight-management research.",
+      Icon: Stethoscope,
+    },
+    {
+      slug: "cognitive",
+      name: "Cognitive peptides",
+      description: "Discussed for memory, focus, and neuroprotection research.",
+      Icon: BookOpen,
+    },
+    {
+      slug: "longevity",
+      name: "Longevity peptides",
+      description: "Epitalon, GHK-Cu, and the broader healthspan conversation.",
+      Icon: ShieldCheck,
+    },
+    {
+      slug: "healing-repair",
+      name: "Immune & inflammation",
+      description: "Peptides in inflammation-modulation and immune-support research.",
+      Icon: MessageSquareText,
+    },
+  ];
+  return (
+    <section aria-labelledby="explore" className="border-b border-line">
+      <Container className="py-20">
+        <Reveal>
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div className="max-w-readable">
+              <p className="text-xs uppercase tracking-wider text-ink-subtle">Explore</p>
+              <h2 id="explore" className="mt-2 font-serif text-display-lg text-ink">
+                Start with a category
+              </h2>
+              <p className="mt-4 text-ink-muted">
+                The peptide landscape is wide. Categories give you a lay of the land and a path to
+                the individual research summaries underneath.
+              </p>
+            </div>
+            <Link href="/peptides" className="text-sm font-medium text-ink hover:text-brand">
+              All peptides →
+            </Link>
+          </div>
+        </Reveal>
+
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {categories.map((cat, i) => (
+            <Reveal key={`${cat.slug}-${cat.name}`} delay={i * 0.03}>
+              <Link
+                href={`/peptides/categories/${cat.slug}`}
+                className="group relative flex h-full flex-col rounded-lg border border-line bg-paper p-6 transition-all hover:border-ink-subtle hover:shadow-card"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-brand/10 text-brand">
+                  <cat.Icon aria-hidden className="h-5 w-5" />
+                </div>
+                <h3 className="mt-5 font-serif text-xl text-ink">{cat.name}</h3>
+                <p className="mt-2 text-sm text-ink-muted">{cat.description}</p>
+                <span className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-ink transition-colors group-hover:text-brand">
+                  Explore
+                  <ArrowRight
+                    aria-hidden
+                    className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+                  />
+                </span>
+              </Link>
+            </Reveal>
           ))}
         </div>
       </Container>
     </section>
   );
 }
+
+// ─── Featured peptides ─────────────────────────────────────────────────────
+
+function FeaturedPeptides({ peptides }: { peptides: PeptideSummary[] }) {
+  if (peptides.length === 0) return null;
+  return (
+    <section aria-labelledby="featured-peptides" className="border-b border-line bg-paper-raised">
+      <Container className="py-20">
+        <Reveal>
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="text-xs uppercase tracking-wider text-ink-subtle">Peptide library</p>
+              <h2 id="featured-peptides" className="mt-2 font-serif text-display-lg text-ink">
+                Start with the fundamentals
+              </h2>
+            </div>
+            <Link href="/peptides" className="text-sm font-medium text-ink hover:text-brand">
+              Browse all peptides →
+            </Link>
+          </div>
+        </Reveal>
+
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {peptides.map((peptide, i) => (
+            <Reveal key={peptide.slug} delay={i * 0.03}>
+              <PeptideCard peptide={peptide} />
+            </Reveal>
+          ))}
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+// ─── How it works ──────────────────────────────────────────────────────────
+
+function HowItWorks() {
+  const steps: Array<{ n: string; title: string; body: string }> = [
+    {
+      n: "01",
+      title: "Research",
+      body: "Start with a structured peptide page. Mechanism, forms discussed in the literature, what the research supports, what it doesn't. Every claim cited.",
+    },
+    {
+      n: "02",
+      title: "Compare",
+      body: "Side-by-side comparisons for peptides that readers frequently research together. The matrix does the work so you can focus on the narrative.",
+    },
+    {
+      n: "03",
+      title: "Connect",
+      body: "Ready to go further? Tell us what you're researching and we'll share independently reviewed providers that fit your goals and state.",
+    },
+  ];
+  return (
+    <section aria-labelledby="how" className="border-b border-line">
+      <Container className="py-20">
+        <Reveal>
+          <div className="max-w-readable">
+            <p className="text-xs uppercase tracking-wider text-ink-subtle">How to use PeptideNexa</p>
+            <h2 id="how" className="mt-2 font-serif text-display-lg text-ink">
+              From first question to credible provider
+            </h2>
+          </div>
+        </Reveal>
+
+        <ol className="mt-12 grid gap-6 md:grid-cols-3">
+          {steps.map((step, i) => (
+            <Reveal key={step.n} delay={i * 0.06}>
+              <li className="relative flex h-full flex-col rounded-lg border border-line bg-paper p-8">
+                <span
+                  aria-hidden
+                  className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-brand"
+                >
+                  {step.n}
+                </span>
+                <h3 className="mt-4 font-serif text-2xl text-ink">{step.title}</h3>
+                <p className="mt-3 text-ink-muted">{step.body}</p>
+              </li>
+            </Reveal>
+          ))}
+        </ol>
+
+        <Reveal delay={0.18}>
+          <div className="mt-10">
+            <Button asChild size="lg" className="gap-2">
+              <Link href="/match">
+                Start with the matching quiz
+                <ArrowRight aria-hidden className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+        </Reveal>
+      </Container>
+    </section>
+  );
+}
+
+// ─── Featured providers ────────────────────────────────────────────────────
 
 function FeaturedProviders({ providers }: { providers: ProviderSummary[] }) {
   if (providers.length === 0) return null;
   return (
     <section aria-labelledby="featured-providers" className="border-b border-line bg-paper-raised">
-      <Container className="py-16 md:py-20">
-        <div className="flex items-end justify-between gap-6">
-          <div>
-            <p className="text-xs uppercase tracking-wider text-ink-subtle">Provider directory</p>
-            <h2 id="featured-providers" className="mt-2 font-serif text-display-lg text-ink">
-              Independently reviewed providers
-            </h2>
+      <Container className="py-20">
+        <Reveal>
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="text-xs uppercase tracking-wider text-ink-subtle">Provider directory</p>
+              <h2 id="featured-providers" className="mt-2 font-serif text-display-lg text-ink">
+                Independently reviewed providers
+              </h2>
+              <p className="mt-4 max-w-readable text-ink-muted">
+                Every provider on PeptideNexa is reviewed by our editorial team. Featured placements
+                are clearly labeled — they pay for visibility, not ranking.
+              </p>
+            </div>
+            <Link href="/providers" className="text-sm font-medium text-ink hover:text-brand">
+              Browse directory →
+            </Link>
           </div>
-          <Link
-            href="/providers"
-            className="hidden text-sm font-medium text-ink hover:text-brand md:inline-flex"
-          >
-            Browse directory →
-          </Link>
-        </div>
+        </Reveal>
 
         <div className="mt-10 grid gap-6 md:grid-cols-2">
-          {providers.map((provider) => (
-            <ProviderCard key={provider.slug} provider={provider} />
+          {providers.map((provider, i) => (
+            <Reveal key={provider.slug} delay={i * 0.03}>
+              <ProviderCard provider={provider} />
+            </Reveal>
           ))}
         </div>
       </Container>
     </section>
   );
 }
+
+// ─── Editorial spotlight ───────────────────────────────────────────────────
+
+function EditorialSpotlight() {
+  return (
+    <section aria-labelledby="editorial" className="border-b border-line">
+      <Container className="py-20">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-20">
+          <Reveal>
+            <div>
+              <p className="text-xs uppercase tracking-wider text-ink-subtle">Editorial</p>
+              <h2 id="editorial" className="mt-2 font-serif text-display-lg text-ink">
+                How to read peptide research without getting hype-pilled
+              </h2>
+              <p className="mt-5 text-ink-muted">
+                The peptide conversation online is loud. Our editorial hub is the cold-water
+                counterweight — careful, sourced, specific.
+              </p>
+              <Link
+                href="/guides/calm-guide-to-peptide-research"
+                className="mt-8 inline-flex items-center gap-1 text-sm font-medium text-ink hover:text-brand"
+              >
+                Read the guide
+                <ArrowRight aria-hidden className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+          </Reveal>
+
+          <Reveal delay={0.06}>
+            <blockquote className="relative rounded-lg border border-line bg-paper-raised p-8 md:p-10">
+              <span
+                aria-hidden
+                className="absolute left-8 top-4 font-serif text-6xl leading-none text-brand/20"
+              >
+                &ldquo;
+              </span>
+              <p className="relative font-serif text-xl leading-relaxed text-ink md:text-2xl">
+                When evaluating any peptide, the first question is mechanism. What does it do at the
+                receptor level, and which tissues express those receptors? Mechanism tells you what
+                questions to ask — of the research and of the provider.
+              </p>
+              <footer className="mt-6 text-sm text-ink-subtle">
+                PeptideNexa Editorial · Calm guide to peptide research
+              </footer>
+            </blockquote>
+          </Reveal>
+        </div>
+      </Container>
+    </section>
+  );
+}
+
+// ─── FAQ ───────────────────────────────────────────────────────────────────
+
+function HomeFaq() {
+  const items = [
+    {
+      question: "Is PeptideNexa a medical provider?",
+      answer:
+        "No. We're an editorial and directory platform. We do not prescribe, diagnose, or deliver medical care. Every page on the site is educational and informational. Always consult a qualified clinician before acting on anything you read here.",
+    },
+    {
+      question: "How do you decide which providers get featured?",
+      answer:
+        "Every provider is independently reviewed by our editorial team for licensing, clarity of service, and compliance posture. Featured placements pay for visibility and are visibly labeled. Rankings and editorial reviews are not influenced by advertiser payment.",
+    },
+    {
+      question: "Where do your sources come from?",
+      answer:
+        "Every peptide page lists its sources. We prioritize peer-reviewed literature and primary studies, and we note when a claim is speculative or based on preclinical work only. Editorial content is reviewed by a clinically credentialed advisor before publication.",
+    },
+    {
+      question: "Do I have to sign up to use the site?",
+      answer:
+        "No. The full library, directory, and guides are free. Our matching quiz is opt-in — you only share details when you ask us to route you to providers.",
+    },
+  ];
+  return (
+    <section aria-labelledby="home-faq" className="border-b border-line bg-paper-raised">
+      <Container className="py-20">
+        <Reveal>
+          <div className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-20">
+            <div>
+              <p className="text-xs uppercase tracking-wider text-ink-subtle">FAQ</p>
+              <h2 id="home-faq" className="mt-2 font-serif text-display-lg text-ink">
+                Common questions
+              </h2>
+              <p className="mt-4 text-ink-muted">
+                Can&rsquo;t find what you&rsquo;re looking for? Our{" "}
+                <Link href="/methodology" className="text-brand underline">
+                  methodology page
+                </Link>{" "}
+                goes deeper.
+              </p>
+            </div>
+            <div>
+              <FaqBlock items={items} heading="" />
+            </div>
+          </div>
+        </Reveal>
+      </Container>
+    </section>
+  );
+}
+
+// ─── Methodology band ──────────────────────────────────────────────────────
 
 function MethodologyBand() {
   return (
     <section aria-labelledby="methodology" className="border-b border-line">
       <Container className="py-20">
         <div className="grid gap-10 md:grid-cols-[1fr_2fr]">
-          <div>
-            <p className="text-xs uppercase tracking-wider text-ink-subtle">How we work</p>
-            <h2 id="methodology" className="mt-2 font-serif text-display-md text-ink">
-              Transparent, sourced, and reviewed.
-            </h2>
-          </div>
+          <Reveal>
+            <div>
+              <p className="text-xs uppercase tracking-wider text-ink-subtle">How we work</p>
+              <h2 id="methodology" className="mt-2 font-serif text-display-md text-ink">
+                Trust is a product feature, not a footer link.
+              </h2>
+            </div>
+          </Reveal>
           <div className="grid gap-8 md:grid-cols-3">
-            <MethodologyItem
-              title="Cited research"
-              body="Every peptide page lists the sources behind each claim. We cite peer-reviewed and primary literature where available."
-            />
-            <MethodologyItem
-              title="Clinical review"
-              body="Peptide pages are reviewed by clinically credentialed advisors before publication and re-reviewed quarterly."
-            />
-            <MethodologyItem
-              title="Labeled commerce"
-              body="Featured and affiliate placements are visibly labeled. Editorial rankings are independent of payment."
-            />
+            {[
+              {
+                title: "Cited research",
+                body: "Every peptide page lists the sources behind each claim. We cite peer-reviewed and primary literature where available.",
+              },
+              {
+                title: "Clinical review",
+                body: "Peptide pages are reviewed by clinically credentialed advisors before publication and re-reviewed quarterly.",
+              },
+              {
+                title: "Labeled commerce",
+                body: "Featured and affiliate placements are visibly labeled. Editorial rankings are independent of payment.",
+              },
+            ].map((item, i) => (
+              <Reveal key={item.title} delay={i * 0.05}>
+                <div>
+                  <h3 className="font-medium text-ink">{item.title}</h3>
+                  <p className="mt-2 text-sm text-ink-muted">{item.body}</p>
+                </div>
+              </Reveal>
+            ))}
           </div>
         </div>
       </Container>
@@ -164,31 +523,28 @@ function MethodologyBand() {
   );
 }
 
-function MethodologyItem({ title, body }: { title: string; body: string }) {
-  return (
-    <div>
-      <h3 className="font-medium text-ink">{title}</h3>
-      <p className="mt-2 text-sm text-ink-muted">{body}</p>
-    </div>
-  );
-}
+// ─── Newsletter ────────────────────────────────────────────────────────────
 
 function NewsletterBand() {
   return (
     <section aria-labelledby="newsletter" className="bg-paper-sunken">
-      <Container className="py-16">
+      <Container className="py-20">
         <div className="grid gap-10 md:grid-cols-[1fr_1fr]">
-          <div>
-            <p className="text-xs uppercase tracking-wider text-ink-subtle">Research digest</p>
-            <h2 id="newsletter" className="mt-2 font-serif text-display-md text-ink">
-              Short, careful updates. No hype.
-            </h2>
-            <p className="mt-4 max-w-readable text-ink-muted">
-              A monthly dispatch on peptide research, provider news, and category shifts. Written by
-              our editorial team, not a content mill.
-            </p>
-          </div>
-          <NewsletterForm source="homepage" />
+          <Reveal>
+            <div>
+              <p className="text-xs uppercase tracking-wider text-ink-subtle">Research digest</p>
+              <h2 id="newsletter" className="mt-2 font-serif text-display-md text-ink">
+                Short, careful updates. No hype.
+              </h2>
+              <p className="mt-4 max-w-readable text-ink-muted">
+                A monthly dispatch on peptide research, provider news, and category shifts. Written
+                by our editorial team, not a content mill.
+              </p>
+            </div>
+          </Reveal>
+          <Reveal delay={0.06}>
+            <NewsletterForm source="homepage" />
+          </Reveal>
         </div>
       </Container>
     </section>
