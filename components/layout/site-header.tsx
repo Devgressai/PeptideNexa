@@ -1,13 +1,15 @@
 import Link from "next/link";
+import type { Route } from "next";
 import { Container } from "./container";
+import { NavLink } from "./nav-link";
 import { Button } from "@/components/ui/button";
 
-const primaryNav = [
-  { label: "Peptides", href: "/peptides" as const },
-  { label: "Providers", href: "/providers" as const },
-  { label: "Compare", href: "/compare" as const },
-  { label: "Guides", href: "/guides" as const },
-  { label: "For providers", href: "/for-providers" as const },
+const primaryNav: Array<{ label: string; href: Route }> = [
+  { label: "Peptides", href: "/peptides" },
+  { label: "Providers", href: "/providers" },
+  { label: "Compare", href: "/compare" },
+  { label: "Guides", href: "/guides" },
+  { label: "For providers", href: "/for-providers" },
 ];
 
 export function SiteHeader() {
@@ -21,13 +23,7 @@ export function SiteHeader() {
 
         <nav aria-label="Primary" className="hidden items-center gap-6 md:flex">
           {primaryNav.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="text-sm text-ink-muted transition-colors hover:text-ink"
-            >
-              {item.label}
-            </Link>
+            <NavLink key={item.href} href={item.href} label={item.label} />
           ))}
         </nav>
 

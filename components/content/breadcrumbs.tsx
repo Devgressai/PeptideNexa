@@ -23,7 +23,12 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
                   {crumb.label}
                 </Link>
               ) : (
-                <span className={cn(isLast && "text-ink")}>{crumb.label}</span>
+                <span
+                  aria-current={isLast ? "page" : undefined}
+                  className={cn(isLast && "text-ink")}
+                >
+                  {crumb.label}
+                </span>
               )}
               {!isLast ? <ChevronRight aria-hidden className="h-3 w-3" /> : null}
             </li>
