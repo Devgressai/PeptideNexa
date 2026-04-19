@@ -14,7 +14,7 @@ type BuildMetadataInput = {
   noIndex?: boolean;
 };
 
-const DEFAULT_OG_IMAGE = "/og/default.png";
+const DEFAULT_OG_IMAGE = "/og/default.png"; // served by app/og/default.png/route.tsx
 
 export function buildMetadata(input: BuildMetadataInput): Metadata {
   const url = absoluteUrl(input.path);

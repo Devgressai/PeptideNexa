@@ -7,7 +7,7 @@ import { Breadcrumbs } from "@/components/content/breadcrumbs";
 import { Badge } from "@/components/ui/badge";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { JsonLd } from "@/components/seo/json-ld";
-import { breadcrumbSchema } from "@/lib/seo/schema";
+import { breadcrumbSchema, itemListSchema } from "@/lib/seo/schema";
 import type { DirectoryFilter } from "@/lib/content/types";
 import { searchProviders } from "@/lib/db/loaders/provider";
 
@@ -81,6 +81,14 @@ export default async function ProvidersDirectoryPage({
           { name: "Providers", path: "/providers" },
         ])}
       />
+      {providers.length > 0 ? (
+        <JsonLd
+          data={itemListSchema(
+            "Peptide provider directory",
+            providers.map((p) => ({ name: p.name, path: `/providers/${p.slug}` })),
+          )}
+        />
+      ) : null}
     </>
   );
 }

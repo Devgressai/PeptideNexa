@@ -96,6 +96,22 @@ type ProviderSchemaInput = {
   country?: string | null;
 };
 
+type ItemListEntry = { name: string; path: string };
+export function itemListSchema(name: string, items: ItemListEntry[]): Jsonld {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name,
+    numberOfItems: items.length,
+    itemListElement: items.map((item, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      name: item.name,
+      url: absoluteUrl(item.path),
+    })),
+  };
+}
+
 export function providerSchema(input: ProviderSchemaInput): Jsonld {
   return {
     "@context": "https://schema.org",

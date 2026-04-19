@@ -6,6 +6,7 @@ import { leadInputSchema, type LeadInput } from "@/lib/validators/lead";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import { prisma } from "@/lib/db/client";
 import { matchProviders } from "@/lib/matching/engine";
+import { logger } from "@/lib/logger";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -76,19 +77,19 @@ export async function POST(request: Request) {
 
     // Routing (E6-T5): enqueue a background job here once Inngest is wired.
     // For now, a server log stands in for the CRM webhook + provider email.
-    console.info("[lead] created", {
-      id: lead.id,
+    logger.info("lead.created", {
+      leadId: lead.id,
       source: input.source,
-      state: input.locationState,
+      state: input.locationState || undefined,
       goal: input.intentGoalSlug,
       peptide: input.intentPeptideSlug,
       budget: input.budgetTier,
-      matches: matchedProviderIds,
+      matchCount: matchedProviderIds.length,
     });
 
     return NextResponse.json({ ok: true, token: lead.id, matches: matchedProviderIds });
   } catch (err) {
-    console.error("[lead] persistence failed", err);
+    logger.error("lead.persistence_failed", { error: String(err) });
     return NextResponse.json(
       { error: "We couldn't record your request. Please try again shortly." },
       { status: 500 },

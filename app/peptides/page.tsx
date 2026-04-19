@@ -4,7 +4,9 @@ import Link from "next/link";
 import { Container } from "@/components/layout/container";
 import { Breadcrumbs } from "@/components/content/breadcrumbs";
 import { PeptideCard } from "@/components/content/peptide-card";
+import { JsonLd } from "@/components/seo/json-ld";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { breadcrumbSchema, itemListSchema } from "@/lib/seo/schema";
 import { getPublishedPeptides } from "@/lib/db/loaders/peptide";
 
 export const metadata: Metadata = buildMetadata({
@@ -54,6 +56,21 @@ export default async function PeptidesIndexPage() {
           </Link>
         </div>
       </Container>
+
+      <JsonLd
+        data={breadcrumbSchema([
+          { name: "Home", path: "/" },
+          { name: "Peptides", path: "/peptides" },
+        ])}
+      />
+      {peptides.length > 0 ? (
+        <JsonLd
+          data={itemListSchema(
+            "Peptide library",
+            peptides.map((p) => ({ name: p.name, path: `/peptides/${p.slug}` })),
+          )}
+        />
+      ) : null}
     </>
   );
 }

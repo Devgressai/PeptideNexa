@@ -3,6 +3,7 @@ import { ZodError } from "zod";
 
 import { newsletterInputSchema } from "@/lib/validators/newsletter";
 import { rateLimit, getClientIp } from "@/lib/rate-limit";
+import { logger } from "@/lib/logger";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -32,6 +33,6 @@ export async function POST(request: Request) {
   }
 
   // Honeypot is enforced at the Zod layer (`company: z.string().max(0)`).
-  console.info("[newsletter] subscribed", { email: input.email, source: input.source });
+  logger.info("newsletter.subscribed", { email: input.email, source: input.source });
   return NextResponse.json({ ok: true });
 }

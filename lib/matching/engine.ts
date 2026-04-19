@@ -56,26 +56,36 @@ export async function matchProviders(
     where.priceTier = { in: ["STANDARD", "PREMIUM"] };
   }
 
+  // Fetch a reasonable candidate pool, then rank explicitly in JS.
+  // Postgres enum `orderBy` follows the enum *declaration* order, not our
+  // intended featured-first sort, so sorting in Prisma would be wrong.
   const rows: ProviderMatchRow[] = await prisma.provider
     .findMany({
       where,
       include: { peptides: { select: { peptide: { select: { slug: true } } } } },
-      orderBy: [
-        // ProviderStatus.FEATURED < ProviderStatus.LISTED alphabetically,
-        // so `asc` puts featured first.
-        { status: "asc" },
-        { verified: "desc" },
-        { lastVerifiedAt: "desc" },
-        { name: "asc" },
-      ],
-      take: limit,
+      take: 50,
     })
     .catch((err) => {
       console.error("[matching] query failed", err);
       return [] as ProviderMatchRow[];
     });
 
-  return rows.map(toSummary);
+  return rows.sort(compareRankingRows).slice(0, limit).map(toSummary);
+}
+
+function compareRankingRows(a: ProviderMatchRow, b: ProviderMatchRow): number {
+  // 1. Featured above listed.
+  const aFeatured = a.status === ProviderStatus.FEATURED;
+  const bFeatured = b.status === ProviderStatus.FEATURED;
+  if (aFeatured !== bFeatured) return aFeatured ? -1 : 1;
+  // 2. Verified above unverified.
+  if (a.verified !== b.verified) return a.verified ? -1 : 1;
+  // 3. Most-recently-verified first (null = never verified, sort last).
+  const aTs = a.lastVerifiedAt?.getTime() ?? 0;
+  const bTs = b.lastVerifiedAt?.getTime() ?? 0;
+  if (aTs !== bTs) return bTs - aTs;
+  // 4. Name alphabetical — deterministic final tiebreaker.
+  return a.name.localeCompare(b.name);
 }
 
 function toSummary(row: ProviderMatchRow): ProviderSummary {

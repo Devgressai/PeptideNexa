@@ -80,12 +80,26 @@ export async function searchProviders(filter: DirectoryFilter): Promise<Provider
     .findMany({
       where,
       select: SUMMARY_SELECT,
-      // Featured first, then verified, then most-recently-verified.
-      orderBy: [{ status: "asc" }, { verified: "desc" }, { lastVerifiedAt: "desc" }, { name: "asc" }],
+      // Prisma cannot sort Postgres enums in our intended featured-first
+      // order (it uses enum declaration order). We fetch a bounded pool and
+      // rank in JS below.
       take: 60,
     })
-    .then((rows) => rows.map(toSummary))
+    .then((rows) =>
+      rows
+        .slice()
+        .sort(compareProviderRows)
+        .map(toSummary),
+    )
     .catch(handle("searchProviders", [] as ProviderSummary[]));
+}
+
+function compareProviderRows(a: SummaryRow, b: SummaryRow): number {
+  const aFeatured = a.status === ProviderStatus.FEATURED;
+  const bFeatured = b.status === ProviderStatus.FEATURED;
+  if (aFeatured !== bFeatured) return aFeatured ? -1 : 1;
+  if (a.verified !== b.verified) return a.verified ? -1 : 1;
+  return a.name.localeCompare(b.name);
 }
 
 export async function getProviderBySlug(slug: string): Promise<ProviderDetail | null> {

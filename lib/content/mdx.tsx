@@ -9,6 +9,20 @@ import { SourceChip } from "@/components/content/mdx/source-chip";
 import { DisclaimerBanner } from "@/components/content/disclaimer-banner";
 import { FaqBlock } from "@/components/content/faq-block";
 
+/**
+ * Trust boundary.
+ *
+ * MDX bodies are authored exclusively by admins/editors via the admin app
+ * (Auth.js + RBAC). No user-submitted content is ever rendered through this
+ * pipeline. As a result we deliberately do not bolt on rehype-sanitize —
+ * sanitization would strip our JSX component allowlist below, and the
+ * allowlist is our primary safety mechanism for *structured* content.
+ *
+ * If a future feature ingests user-submitted markdown (comments, reviews,
+ * provider-authored copy), that path MUST compile through a separate, strict
+ * MDX+sanitize pipeline and NEVER share this renderer.
+ */
+
 // Safe component allowlist exposed to authored MDX bodies.
 // Adding a component here is an editorial decision, not a drive-by — every
 // component in this map becomes part of the author surface and should be
