@@ -1,0 +1,86 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Paper / ink */
+    --paper: 40 33% 97%;
+    --paper-raised: 0 0% 100%;
+    --paper-sunken: 40 20% 94%;
+    --ink: 220 29% 9%;
+    --ink-muted: 220 10% 35%;
+    --ink-subtle: 220 8% 52%;
+    --line: 220 14% 89%;
+
+    /* Brand — deep pharmacy green */
+    --brand: 165 72% 21%;
+    --brand-muted: 165 30% 40%;
+    --brand-contrast: 40 33% 97%;
+
+    /* Signal — muted warm */
+    --signal: 32 54% 51%;
+    --signal-muted: 32 40% 65%;
+
+    --danger: 0 72% 45%;
+    --success: 152 52% 32%;
+
+    --radius: 0.5rem;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-paper font-sans text-ink antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "ss01", "cv11";
+  }
+
+  :focus-visible {
+    outline: none;
+  }
+
+  ::selection {
+    @apply bg-brand/20 text-ink;
+  }
+}
+
+@layer components {
+  .prose-editorial {
+    @apply text-[17px] leading-[1.7] text-ink;
+  }
+  .prose-editorial h2 {
+    @apply mt-12 font-serif text-display-md text-ink;
+  }
+  .prose-editorial h3 {
+    @apply mt-8 font-serif text-2xl text-ink;
+  }
+  .prose-editorial p {
+    @apply mt-5;
+  }
+  .prose-editorial a {
+    @apply text-brand underline decoration-brand/40 underline-offset-4 transition-colors hover:decoration-brand;
+  }
+  .prose-editorial ul,
+  .prose-editorial ol {
+    @apply mt-5 space-y-2 pl-6;
+  }
+  .prose-editorial ul {
+    @apply list-disc;
+  }
+  .prose-editorial ol {
+    @apply list-decimal;
+  }
+  .prose-editorial blockquote {
+    @apply mt-6 border-l-2 border-brand pl-5 font-serif text-xl italic text-ink-muted;
+  }
+  .prose-editorial code {
+    @apply rounded-sm bg-paper-sunken px-1 py-0.5 font-mono text-[0.9em] text-ink;
+  }
+  .prose-editorial hr {
+    @apply my-10 border-line;
+  }
+}

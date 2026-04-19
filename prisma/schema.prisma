@@ -1,0 +1,400 @@
+// PeptideNexa — canonical data model
+// Source of truth for all structured entities. MDX bodies live alongside
+// structured metadata; narrative is data, not a separate CMS.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Taxonomy
+// ──────────────────────────────────────────────────────────────────────────────
+
+model Category {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String?
+  seoTitle    String?
+  seoDescription String?
+  peptides    Peptide[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Goal {
+  id          String    @id @default(cuid())
+  slug        String    @unique
+  name        String
+  description String?
+  peptides    Peptide[] @relation("PeptideGoals")
+  protocols   Protocol[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Tag {
+  id       String    @id @default(cuid())
+  slug     String    @unique
+  name     String
+  articles Article[] @relation("ArticleTags")
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Peptides (the atomic editorial/product entity)
+// ──────────────────────────────────────────────────────────────────────────────
+
+model Peptide {
+  id             String         @id @default(cuid())
+  slug           String         @unique
+  name           String
+  aliases        String[]       @default([])
+  categoryId     String
+  category       Category       @relation(fields: [categoryId], references: [id])
+  goals          Goal[]         @relation("PeptideGoals")
+  summary        String
+  bodyMdx        String         @default("")
+  researchLevel  Int            @default(0) // 0-5 editorial rubric
+  commonForms    String[]       @default([])
+  seoTitle       String?
+  seoDescription String?
+  status         ContentStatus  @default(DRAFT)
+  authorId       String?
+  author         Author?        @relation("PeptideAuthor", fields: [authorId], references: [id])
+  reviewerId     String?
+  reviewer       Author?        @relation("PeptideReviewer", fields: [reviewerId], references: [id])
+  lastReviewedAt DateTime?
+  publishedAt    DateTime?
+
+  relatedPeptides   Peptide[]          @relation("PeptideRelated")
+  relatedByPeptides Peptide[]          @relation("PeptideRelated")
+  faqs              Faq[]
+  sources           Source[]
+  offerings         ProviderPeptide[]
+  comparisonsA      Comparison[]       @relation("ComparisonA")
+  comparisonsB      Comparison[]       @relation("ComparisonB")
+  protocols         Protocol[]         @relation("ProtocolPeptides")
+  articles          Article[]          @relation("ArticlePeptides")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([categoryId, status])
+  @@index([status, publishedAt])
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Providers
+// ──────────────────────────────────────────────────────────────────────────────
+
+model Provider {
+  id               String          @id @default(cuid())
+  slug             String          @unique
+  name             String
+  type             ProviderType
+  status           ProviderStatus  @default(DRAFT)
+  verified         Boolean         @default(false)
+  websiteUrl       String
+  affiliateUrl     String?
+  addressLine1     String?
+  city             String?
+  state            String?
+  postalCode       String?
+  country          String          @default("US")
+  servesStates     String[]        @default([])
+  shortDescription String
+  bodyMdx          String?
+  priceTier        PriceTier?
+  licensing        String?
+  editorialNote    String?
+  lastVerifiedAt   DateTime?
+  seoTitle         String?
+  seoDescription   String?
+
+  planId    String?
+  plan      Plan?             @relation(fields: [planId], references: [id])
+  services  Service[]         @relation("ProviderServices")
+  peptides  ProviderPeptide[]
+  contacts  ProviderContact[]
+  leads     Lead[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status, type])
+  @@index([state, status])
+}
+
+model ProviderPeptide {
+  providerId String
+  peptideId  String
+  notes      String?
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  peptide    Peptide  @relation(fields: [peptideId], references: [id], onDelete: Cascade)
+
+  @@id([providerId, peptideId])
+  @@index([peptideId])
+}
+
+model Service {
+  id        String     @id @default(cuid())
+  slug      String     @unique
+  name      String
+  providers Provider[] @relation("ProviderServices")
+}
+
+model ProviderContact {
+  id         String   @id @default(cuid())
+  providerId String
+  role       String
+  email      String?
+  phone      String?
+  provider   Provider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Editorial / comparisons / protocols / articles
+// ──────────────────────────────────────────────────────────────────────────────
+
+model Comparison {
+  id         String        @id @default(cuid())
+  slug       String        @unique
+  peptideAId String
+  peptideBId String
+  peptideA   Peptide       @relation("ComparisonA", fields: [peptideAId], references: [id])
+  peptideB   Peptide       @relation("ComparisonB", fields: [peptideBId], references: [id])
+  bodyMdx    String        @default("")
+  matrixJson Json
+  status     ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  faqs       Faq[]
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  @@index([status])
+}
+
+model Protocol {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  title       String
+  goalId      String?
+  goal        Goal?         @relation(fields: [goalId], references: [id])
+  summary     String
+  bodyMdx     String        @default("")
+  disclaimer  String
+  peptides    Peptide[]     @relation("ProtocolPeptides")
+  sources     Source[]
+  status      ContentStatus @default(DRAFT)
+  publishedAt DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Article {
+  id              String        @id @default(cuid())
+  slug            String        @unique
+  title           String
+  excerpt         String
+  bodyMdx         String
+  authorId        String
+  author          Author        @relation("ArticleAuthor", fields: [authorId], references: [id])
+  tags            Tag[]         @relation("ArticleTags")
+  relatedPeptides Peptide[]     @relation("ArticlePeptides")
+  publishedAt     DateTime?
+  status          ContentStatus @default(DRAFT)
+  seoTitle        String?
+  seoDescription  String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([status, publishedAt])
+}
+
+model Author {
+  id              String    @id @default(cuid())
+  slug            String    @unique
+  name            String
+  credentials     String?
+  bio             String?
+  photoUrl        String?
+  articles        Article[] @relation("ArticleAuthor")
+  peptidesAuthored Peptide[] @relation("PeptideAuthor")
+  peptidesReviewed Peptide[] @relation("PeptideReviewer")
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Trust artifacts
+// ──────────────────────────────────────────────────────────────────────────────
+
+model Faq {
+  id           String      @id @default(cuid())
+  question     String
+  answer       String
+  peptideId    String?
+  comparisonId String?
+  locationId   String?
+  peptide      Peptide?    @relation(fields: [peptideId], references: [id], onDelete: Cascade)
+  comparison   Comparison? @relation(fields: [comparisonId], references: [id], onDelete: Cascade)
+  location     Location?   @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  sortOrder    Int         @default(0)
+}
+
+model Source {
+  id         String    @id @default(cuid())
+  title      String
+  url        String
+  publisher  String?
+  year       Int?
+  peptideId  String?
+  protocolId String?
+  peptide    Peptide?  @relation(fields: [peptideId], references: [id], onDelete: Cascade)
+  protocol   Protocol? @relation(fields: [protocolId], references: [id], onDelete: Cascade)
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Locations
+// ──────────────────────────────────────────────────────────────────────────────
+
+model Location {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  city      String
+  state     String
+  country   String   @default("US")
+  intro     String
+  bodyMdx   String?
+  seoTitle       String?
+  seoDescription String?
+  faqs      Faq[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([state])
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Leads / routing
+// ──────────────────────────────────────────────────────────────────────────────
+
+model Lead {
+  id                 String       @id @default(cuid())
+  createdAt          DateTime     @default(now())
+  source             String       // originating page slug or campaign
+  intentGoalSlug     String?
+  intentPeptideSlug  String?
+  locationState      String?
+  onlineOk           Boolean      @default(true)
+  budgetTier         BudgetTier?
+  email              String
+  phone              String?
+  name               String?
+  notes              String?
+  matchedProviderIds String[]     @default([])
+  routedProviderId   String?
+  provider           Provider?    @relation(fields: [routedProviderId], references: [id])
+  status             LeadStatus   @default(NEW)
+  events             LeadEvent[]
+
+  @@index([status, createdAt])
+  @@index([email])
+}
+
+model LeadEvent {
+  id        String   @id @default(cuid())
+  leadId    String
+  type      String
+  payload   Json
+  createdAt DateTime @default(now())
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([leadId, createdAt])
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Monetization
+// ──────────────────────────────────────────────────────────────────────────────
+
+model Plan {
+  id           String     @id @default(cuid())
+  slug         String     @unique
+  name         String
+  priceMonthly Int        // cents
+  features     Json
+  providers    Provider[]
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// SEO infrastructure
+// ──────────────────────────────────────────────────────────────────────────────
+
+model Redirect {
+  id   String @id @default(cuid())
+  from String @unique
+  to   String
+  code Int    @default(301)
+}
+
+model InternalLink {
+  id       String @id @default(cuid())
+  fromSlug String
+  toSlug   String
+  anchor   String
+  weight   Int    @default(1)
+
+  @@unique([fromSlug, toSlug, anchor])
+  @@index([fromSlug])
+  @@index([toSlug])
+}
+
+// ──────────────────────────────────────────────────────────────────────────────
+// Enums
+// ──────────────────────────────────────────────────────────────────────────────
+
+enum ProviderType {
+  ONLINE
+  CLINIC
+  COMPOUNDING
+}
+
+enum ProviderStatus {
+  DRAFT
+  LISTED
+  FEATURED
+  PAUSED
+}
+
+enum ContentStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
+
+enum PriceTier {
+  ECONOMY
+  STANDARD
+  PREMIUM
+}
+
+enum BudgetTier {
+  UNDER_250
+  MID
+  HIGH
+}
+
+enum LeadStatus {
+  NEW
+  ROUTED
+  ACCEPTED
+  REJECTED
+  CONVERTED
+  LOST
+}
