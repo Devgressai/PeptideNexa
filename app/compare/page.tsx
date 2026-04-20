@@ -1,69 +1,143 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
+import { ArrowRight, Sparkles } from "lucide-react";
+
 import { Container } from "@/components/layout/container";
 import { Breadcrumbs } from "@/components/content/breadcrumbs";
+import { HeroPattern } from "@/components/content/hero-pattern";
+import { Reveal } from "@/components/content/reveal";
 import { Badge } from "@/components/ui/badge";
 import { buildMetadata } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = buildMetadata({
   title: "Compare peptides — side-by-side research overviews",
-  description: "Independent comparisons of commonly researched peptides, with structured matrices and narrative summaries.",
+  description:
+    "Independent comparisons of commonly researched peptides, with structured matrices and narrative summaries.",
   path: "/compare",
 });
 
 // Comparison index. Individual matrix templates ship under epic E4-T9.
-const COMPARISONS: Array<{ slug: string; title: string; summary: string }> = [
+const COMPARISONS: Array<{
+  slug: string;
+  a: string;
+  b: string;
+  summary: string;
+  tag: string;
+}> = [
   {
     slug: "bpc-157-vs-tb-500",
-    title: "BPC-157 vs TB-500",
-    summary: "Two healing-and-repair peptides with overlapping but distinct research contexts.",
+    a: "BPC-157",
+    b: "TB-500",
+    summary:
+      "Two healing-and-repair peptides with overlapping but distinct research contexts. We unpack mechanisms, forms discussed, and how researchers reason about choice.",
+    tag: "Healing & repair",
   },
   {
     slug: "ipamorelin-vs-cjc-1295",
-    title: "Ipamorelin vs CJC-1295",
-    summary: "Two growth hormone secretagogues often discussed together in the literature.",
+    a: "Ipamorelin",
+    b: "CJC-1295",
+    summary:
+      "Two growth hormone secretagogues often discussed together in the literature. Selective release vs. extended half-life, and how that shapes research conversations.",
+    tag: "Growth hormone",
   },
   {
     slug: "sermorelin-vs-ipamorelin",
-    title: "Sermorelin vs Ipamorelin",
-    summary: "Different mechanisms for stimulating endogenous growth hormone.",
+    a: "Sermorelin",
+    b: "Ipamorelin",
+    summary:
+      "Different mechanisms for stimulating endogenous growth hormone. We compare the pulsatile release profiles and how they&rsquo;re approached in the research literature.",
+    tag: "Growth hormone",
   },
 ];
 
 export default function CompareIndexPage() {
   return (
     <>
-      <header className="border-b border-line bg-paper">
-        <Container className="py-12">
+      <header className="relative overflow-hidden border-b border-line bg-paper">
+        <HeroPattern className="pointer-events-none absolute inset-0 h-full w-full" />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute right-0 top-0 hidden h-full w-[38%] opacity-70 lg:block"
+        >
+          <Image
+            src="/generated/cat-ghs.png"
+            alt=""
+            fill
+            sizes="38vw"
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-paper via-paper/70 to-paper/0" />
+        </div>
+
+        <Container className="relative py-14 md:py-20">
           <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Compare" }]} />
-          <h1 className="mt-4 font-serif text-display-lg text-ink">Peptide comparisons</h1>
-          <p className="mt-3 max-w-readable text-ink-muted">
-            Side-by-side summaries of peptides that readers frequently research together.
-            Independent, sourced, and reviewed.
+          <Badge variant="muted" className="mt-6">
+            Comparisons
+          </Badge>
+          <h1 className="mt-5 max-w-2xl font-serif text-display-xl text-ink">
+            Side-by-side research, so you can ask better questions.
+          </h1>
+          <p className="mt-6 max-w-readable text-lg text-ink-muted">
+            Structured comparisons of peptides that readers frequently research together. Matrix
+            first, narrative second. Independent and sourced.
           </p>
         </Container>
       </header>
-      <Container className="py-12">
-        <ul className="divide-y divide-line border-y border-line">
-          {COMPARISONS.map((item) => (
-            <li key={item.slug} className="py-6">
-              <div className="group flex items-start justify-between gap-6">
-                <div>
-                  <Badge variant="muted">Comparison</Badge>
-                  <h2 className="mt-2 font-serif text-2xl text-ink">{item.title}</h2>
-                  <p className="mt-1 max-w-readable text-ink-muted">{item.summary}</p>
+
+      <Container className="py-16">
+        <div className="grid gap-6 md:grid-cols-2">
+          {COMPARISONS.map((item, i) => (
+            <Reveal key={item.slug} delay={i * 0.04}>
+              <Link
+                href="/compare"
+                aria-label={`${item.a} vs ${item.b} — detail page coming soon`}
+                className="group flex h-full flex-col overflow-hidden rounded-lg border border-line bg-paper p-6 transition-all hover:-translate-y-0.5 hover:border-ink-subtle hover:shadow-raised"
+              >
+                <div className="flex items-center justify-between">
+                  <Badge variant="muted">{item.tag}</Badge>
+                  <span className="inline-flex items-center gap-1 text-xs text-ink-subtle">
+                    <Sparkles aria-hidden className="h-3.5 w-3.5" />
+                    Coming soon
+                  </span>
                 </div>
-                <Link
-                  href="/compare"
-                  className="self-center text-sm font-medium text-ink-subtle"
-                  aria-label={`${item.title} — detail page coming soon`}
-                >
-                  Coming soon →
-                </Link>
-              </div>
-            </li>
+
+                <div className="mt-6 flex items-center gap-3">
+                  <span className="font-serif text-3xl text-ink">{item.a}</span>
+                  <span
+                    aria-hidden
+                    className="font-mono text-xs uppercase tracking-[0.2em] text-ink-subtle"
+                  >
+                    vs
+                  </span>
+                  <span className="font-serif text-3xl text-ink">{item.b}</span>
+                </div>
+
+                <p className="mt-5 text-sm leading-relaxed text-ink-muted">{item.summary}</p>
+
+                <span className="mt-auto inline-flex items-center gap-1 pt-6 text-sm font-medium text-ink transition-colors group-hover:text-brand">
+                  Read comparison
+                  <ArrowRight
+                    aria-hidden
+                    className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+                  />
+                </span>
+              </Link>
+            </Reveal>
           ))}
-        </ul>
+        </div>
+
+        <div className="mt-12 rounded-lg border border-dashed border-line bg-paper-raised p-6 text-sm text-ink-muted">
+          <p>
+            Looking for a comparison we haven&rsquo;t published? Tell us which two peptides and
+            we&rsquo;ll prioritize it for the next editorial cycle.{" "}
+            <Link href="/match" className="text-brand underline">
+              Or take our matching quiz
+            </Link>{" "}
+            to reach a provider directly.
+          </p>
+        </div>
       </Container>
     </>
   );

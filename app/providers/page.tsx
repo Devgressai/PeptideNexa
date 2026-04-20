@@ -1,9 +1,11 @@
 import type { Metadata, Route } from "next";
+import Image from "next/image";
 import Link from "next/link";
 
 import { Container } from "@/components/layout/container";
 import { ProviderCard } from "@/components/content/provider-card";
 import { Breadcrumbs } from "@/components/content/breadcrumbs";
+import { HeroPattern } from "@/components/content/hero-pattern";
 import { Badge } from "@/components/ui/badge";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -40,13 +42,35 @@ export default async function ProvidersDirectoryPage({
 
   return (
     <>
-      <header className="border-b border-line bg-paper">
-        <Container className="py-12">
+      <header className="relative overflow-hidden border-b border-line bg-paper">
+        <HeroPattern className="pointer-events-none absolute inset-0 h-full w-full" />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute right-0 top-0 hidden h-full w-[40%] opacity-70 lg:block"
+        >
+          <Image
+            src="/generated/trust-research.png"
+            alt=""
+            fill
+            sizes="40vw"
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-paper via-paper/70 to-paper/0" />
+        </div>
+
+        <Container className="relative py-14 md:py-20">
           <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "Providers" }]} />
-          <h1 className="mt-4 font-serif text-display-lg text-ink">Peptide providers</h1>
-          <p className="mt-3 max-w-readable text-ink-muted">
-            Online providers, clinics, and compounding pharmacies in the peptide space. Independently
-            reviewed and clearly labeled when sponsored.
+          <Badge variant="muted" className="mt-6">
+            Directory
+          </Badge>
+          <h1 className="mt-5 max-w-2xl font-serif text-display-xl text-ink">
+            Peptide providers, independently reviewed.
+          </h1>
+          <p className="mt-6 max-w-readable text-lg text-ink-muted">
+            Online providers, clinics, and compounding pharmacies — every one reviewed by our
+            editorial team for licensing, clarity of service, and compliance posture. Featured
+            placements are clearly labeled.
           </p>
         </Container>
       </header>
