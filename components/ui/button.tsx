@@ -4,20 +4,27 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-paper disabled:pointer-events-none disabled:opacity-50",
+  [
+    "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-medium",
+    "transition-colors duration-sm",
+    "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/60 focus-visible:ring-offset-2 focus-visible:ring-offset-paper",
+    "disabled:pointer-events-none disabled:opacity-50",
+  ],
   {
     variants: {
       variant: {
-        primary: "bg-ink text-paper hover:bg-ink/90",
-        brand: "bg-brand text-brand-contrast hover:bg-brand/90",
-        secondary: "bg-paper-raised text-ink border border-line hover:bg-paper-sunken",
-        ghost: "text-ink hover:bg-paper-sunken",
-        link: "text-brand underline-offset-4 hover:underline",
-        outline: "border border-ink text-ink hover:bg-ink hover:text-paper",
+        primary: "bg-ink-strong text-paper hover:bg-ink",
+        brand: "bg-brand text-brand-contrast hover:bg-brand-deep",
+        secondary:
+          "border border-line bg-paper-raised text-ink-strong hover:border-line-strong hover:bg-paper-sunken",
+        ghost: "text-ink-strong hover:bg-paper-sunken",
+        link: "text-brand underline-offset-[3px] decoration-brand/35 hover:underline",
+        outline:
+          "border border-ink-strong text-ink-strong hover:bg-ink-strong hover:text-paper",
       },
       size: {
-        sm: "h-9 px-3 text-xs",
-        md: "h-10 px-4",
+        sm: "h-9 px-3 text-[13px]",
+        md: "h-10 px-4 text-sm",
         lg: "h-12 px-6 text-base",
         icon: "h-10 w-10",
       },

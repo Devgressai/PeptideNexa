@@ -19,6 +19,7 @@ const SUMMARY_SELECT = {
   servesStates: true,
   shortDescription: true,
   priceTier: true,
+  lastVerifiedAt: true,
   peptides: { select: { peptide: { select: { slug: true } } } },
 } satisfies Prisma.ProviderSelect;
 
@@ -37,6 +38,7 @@ function toSummary(row: SummaryRow): ProviderSummary {
     shortDescription: row.shortDescription,
     priceTier: row.priceTier,
     peptideSlugs: row.peptides.map((p) => p.peptide.slug),
+    lastVerifiedAt: row.lastVerifiedAt ? row.lastVerifiedAt.toISOString() : null,
   };
 }
 
@@ -122,6 +124,7 @@ export async function getProviderBySlug(slug: string): Promise<ProviderDetail | 
         servesStates: row.servesStates,
         shortDescription: row.shortDescription,
         priceTier: row.priceTier,
+        lastVerifiedAt: row.lastVerifiedAt,
         peptides: row.peptides,
       });
       const detail: ProviderDetail = {
@@ -131,7 +134,6 @@ export async function getProviderBySlug(slug: string): Promise<ProviderDetail | 
         bodyMdx: row.bodyMdx,
         licensing: row.licensing,
         editorialNote: row.editorialNote,
-        lastVerifiedAt: row.lastVerifiedAt ? row.lastVerifiedAt.toISOString() : null,
       };
       return detail;
     })
@@ -146,4 +148,30 @@ export async function getListedProviderSlugs(): Promise<string[]> {
     })
     .then((rows) => rows.map((r) => r.slug))
     .catch(handle("getListedProviderSlugs", [] as string[]));
+}
+
+// Hydrate provider summaries from a slug list, preserving order. Scoped to
+// listed + featured so draft/archived providers never appear in related rails.
+export async function getProviderSummariesBySlugs(
+  slugs: string[],
+  limit = 3,
+): Promise<ProviderSummary[]> {
+  if (slugs.length === 0) return [];
+  const unique = Array.from(new Set(slugs)).slice(0, limit * 2);
+  return prisma.provider
+    .findMany({
+      where: {
+        slug: { in: unique },
+        status: { in: [...LISTED_STATUSES] },
+      },
+      select: SUMMARY_SELECT,
+    })
+    .then((rows) => {
+      const bySlug = new Map(rows.map((r) => [r.slug, toSummary(r)]));
+      return unique
+        .map((slug) => bySlug.get(slug))
+        .filter((p): p is ProviderSummary => p !== undefined)
+        .slice(0, limit);
+    })
+    .catch(handle("getProviderSummariesBySlugs", [] as ProviderSummary[]));
 }

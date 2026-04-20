@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { Container } from "@/components/layout/container";
 import { EditorialLayout } from "@/components/layout/editorial-layout";
 import { Breadcrumbs } from "@/components/content/breadcrumbs";
-import { Byline } from "@/components/content/byline";
-import { LastUpdatedStamp } from "@/components/content/last-updated-stamp";
 import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbSchema, medicalWebPageSchema } from "@/lib/seo/schema";
 import { buildMetadata } from "@/lib/seo/metadata";
@@ -13,6 +12,7 @@ import { Mdx } from "@/lib/content/mdx";
 import { TableOfContents } from "@/components/content/table-of-contents";
 import { ReadingProgress } from "@/components/content/reading-progress";
 import { extractMdxHeadings } from "@/lib/content/mdx-headings";
+import { formatDate } from "@/lib/utils";
 import {
   getArticleBySlug,
   getPublishedArticleSlugs,
@@ -60,7 +60,7 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
     <>
       <ReadingProgress />
       <header className="border-b border-line bg-paper">
-        <Container className="py-10">
+        <Container className="py-12 md:py-16">
           <Breadcrumbs
             items={[
               { label: "Home", href: "/" },
@@ -68,19 +68,46 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
               { label: article.title },
             ]}
           />
-          <h1 className="mt-4 max-w-readable font-serif text-display-lg text-ink">
+          <p className="eyebrow mt-6">Guide</p>
+          <h1 className="mt-3 max-w-readable font-serif text-display-lg text-ink-strong text-balance">
             {article.title}
           </h1>
-          <p className="mt-4 max-w-readable text-lg text-ink-muted">{article.excerpt}</p>
-          <div className="mt-6 flex flex-wrap items-center gap-6">
-            <Byline author={article.author} />
-            <LastUpdatedStamp date={article.updatedAt} label="Updated" />
-          </div>
+          <p className="mt-5 max-w-readable text-lg leading-relaxed text-ink-muted">
+            {article.excerpt}
+          </p>
+
+          <dl className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-3 border-y border-line py-4 text-sm">
+            <div className="flex items-center gap-2">
+              <dt className="eyebrow">Written by</dt>
+              <dd className="text-ink-strong">
+                <span className="font-medium">{article.author.name}</span>
+                {article.author.credentials ? (
+                  <span className="text-ink-subtle">, {article.author.credentials}</span>
+                ) : null}
+              </dd>
+            </div>
+            {article.updatedAt ? (
+              <div className="flex items-center gap-2">
+                <dt className="eyebrow">Updated</dt>
+                <dd>
+                  <time dateTime={article.updatedAt} className="font-medium text-ink-strong">
+                    {formatDate(article.updatedAt)}
+                  </time>
+                </dd>
+              </div>
+            ) : null}
+            <Link
+              href="/editorial-policy"
+              className="ml-auto text-sm font-medium text-brand underline decoration-brand/35 underline-offset-[3px] transition-colors hover:decoration-brand"
+            >
+              Editorial policy →
+            </Link>
+          </dl>
         </Container>
       </header>
 
-      <EditorialLayout>
-        <div className="mt-8">
+      <EditorialLayout aside={headings.length > 0 ? <TableOfContents items={headings} /> : undefined}>
+        <div className="mt-4">
           <Mdx source={article.bodyMdx} />
         </div>
       </EditorialLayout>

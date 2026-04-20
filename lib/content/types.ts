@@ -47,6 +47,7 @@ export type ProviderSummary = {
   shortDescription: string;
   priceTier: "ECONOMY" | "STANDARD" | "PREMIUM" | null;
   peptideSlugs: string[];
+  lastVerifiedAt: string | null;
 };
 
 export type ProviderDetail = ProviderSummary & {
@@ -55,7 +56,6 @@ export type ProviderDetail = ProviderSummary & {
   bodyMdx: string | null;
   licensing: string | null;
   editorialNote: string | null;
-  lastVerifiedAt: string | null;
 };
 
 export type DirectoryFilter = {

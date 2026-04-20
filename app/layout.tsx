@@ -35,7 +35,7 @@ const fontMono = JetBrains_Mono({
 export const metadata: Metadata = defaultMetadata;
 
 export const viewport: Viewport = {
-  themeColor: "#FAF8F5",
+  themeColor: "#FBFCFD",
   width: "device-width",
   initialScale: 1,
 };

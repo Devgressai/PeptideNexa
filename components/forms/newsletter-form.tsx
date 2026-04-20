@@ -38,14 +38,19 @@ export function NewsletterForm({ source = "footer", className }: NewsletterFormP
 
   if (submitted) {
     return (
-      <p className={cn("text-sm text-ink", className)}>
-        You&rsquo;re in. Watch for our next research digest.
-      </p>
+      <div className={cn("flex flex-col gap-2", className)}>
+        <p className="eyebrow text-success">Subscribed</p>
+        <p className="font-serif text-lg text-ink-strong">
+          You&rsquo;re in. Watch for our next research digest.
+        </p>
+      </div>
     );
   }
 
+  const emailError = form.formState.errors.email?.message;
+
   return (
-    <form onSubmit={onSubmit} className={cn("flex flex-col gap-2", className)} noValidate>
+    <form onSubmit={onSubmit} className={cn("flex flex-col gap-3", className)} noValidate>
       <div aria-hidden className="hidden">
         <Input tabIndex={-1} autoComplete="off" {...form.register("company")} />
       </div>
@@ -55,14 +60,20 @@ export function NewsletterForm({ source = "footer", className }: NewsletterFormP
           placeholder="you@example.com"
           autoComplete="email"
           aria-label="Email address"
+          size="lg"
+          state={emailError || error ? "error" : "default"}
           required
           {...form.register("email")}
         />
-        <Button type="submit" disabled={form.formState.isSubmitting}>
-          Subscribe
+        <Button type="submit" size="lg" variant="brand" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting ? "Subscribing…" : "Subscribe"}
         </Button>
       </div>
-      {error ? (
+      {emailError ? (
+        <p role="alert" className="text-xs text-danger">
+          {emailError}
+        </p>
+      ) : error ? (
         <p role="alert" className="text-xs text-danger">
           {error}
         </p>

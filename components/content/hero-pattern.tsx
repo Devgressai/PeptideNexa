@@ -6,7 +6,8 @@ type HeroPatternProps = {
  * Subtle molecular-lattice background for the homepage hero. Rendered as an
  * inline SVG so it ships without a network request and scales crisply at any
  * viewport. Opacity is low enough to stay decorative — it never competes with
- * the type.
+ * the type. Uses currentColor so it inherits the section's ink, keeping the
+ * pattern tonally consistent with the page.
  */
 export function HeroPattern({ className }: HeroPatternProps) {
   return (
@@ -19,20 +20,20 @@ export function HeroPattern({ className }: HeroPatternProps) {
     >
       <defs>
         <radialGradient id="hero-fade" cx="50%" cy="40%" r="70%">
-          <stop offset="0%" stopColor="rgba(15, 94, 74, 0.07)" />
-          <stop offset="60%" stopColor="rgba(15, 94, 74, 0.02)" />
-          <stop offset="100%" stopColor="rgba(15, 94, 74, 0)" />
+          <stop offset="0%" stopColor="currentColor" stopOpacity="0.04" />
+          <stop offset="60%" stopColor="currentColor" stopOpacity="0.015" />
+          <stop offset="100%" stopColor="currentColor" stopOpacity="0" />
         </radialGradient>
         <pattern id="lattice" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
-          <circle cx="1" cy="1" r="1" fill="currentColor" opacity="0.06" />
-          <circle cx="30" cy="30" r="1" fill="currentColor" opacity="0.05" />
+          <circle cx="1" cy="1" r="1" fill="currentColor" opacity="0.05" />
+          <circle cx="30" cy="30" r="1" fill="currentColor" opacity="0.04" />
         </pattern>
       </defs>
-      <rect width="800" height="600" fill="url(#hero-fade)" />
+      <rect width="800" height="600" fill="url(#hero-fade)" className="text-brand" />
       <rect width="800" height="600" fill="url(#lattice)" className="text-ink" />
       {/* A handful of larger "molecule" nodes to break up the grid — placed by
           hand so the composition feels intentional rather than random. */}
-      <g opacity="0.08" className="text-brand">
+      <g opacity="0.12" className="text-brand">
         <circle cx="120" cy="140" r="3" fill="currentColor" />
         <circle cx="160" cy="180" r="2" fill="currentColor" />
         <line x1="120" y1="140" x2="160" y2="180" stroke="currentColor" strokeWidth="0.6" />

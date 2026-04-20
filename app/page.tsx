@@ -1,16 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import type { Metadata, Route } from "next";
-import {
-  ArrowRight,
-  BookOpen,
-  FileText,
-  FlaskConical,
-  MessageSquareText,
-  ShieldCheck,
-  Sparkles,
-  Stethoscope,
-} from "lucide-react";
+import { ArrowRight, FileText, Scale, ShieldCheck } from "lucide-react";
 
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
@@ -19,9 +10,9 @@ import { ProviderCard } from "@/components/content/provider-card";
 import { NewsletterForm } from "@/components/forms/newsletter-form";
 import { Reveal } from "@/components/content/reveal";
 import { FaqBlock } from "@/components/content/faq-block";
-import { Counter } from "@/components/content/counter";
 import { Magnetic } from "@/components/content/magnetic";
 import { buildMetadata } from "@/lib/seo/metadata";
+import { cn } from "@/lib/utils";
 import type { PeptideSummary, ProviderSummary } from "@/lib/content/types";
 import { getFeaturedPeptides } from "@/lib/db/loaders/peptide";
 import { getFeaturedProviders } from "@/lib/db/loaders/provider";
@@ -44,9 +35,10 @@ export default async function HomePage() {
   return (
     <>
       <Hero />
-      <TrustStrip />
+      <AuthorityRibbon />
       <TopStories />
-      <ExploreByCategory />
+      <EditorialBoard />
+      <PeptideIndex />
       <FeaturedPeptides peptides={featuredPeptides} />
       <HowItWorks />
       <FeaturedProviders providers={featuredProviders} />
@@ -85,17 +77,27 @@ function Hero() {
 
       <Container className="relative flex min-h-[620px] flex-col justify-end py-16 md:min-h-[720px] md:py-20 lg:min-h-[780px]">
         <div className="max-w-3xl text-paper">
-          <div className="flex items-center gap-2">
-            <span className="relative inline-flex h-2 w-2 items-center justify-center">
-              <span className="absolute h-2 w-2 animate-ping rounded-full bg-paper opacity-40" />
-              <span className="relative h-1.5 w-1.5 rounded-full bg-paper" />
+          {/* Attribution strip — replaces the old pulse-dot trust pill.
+              Real reviewer + review date is the strongest trust signal available. */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[12px] text-paper/75">
+            <span className="font-sans font-medium uppercase tracking-[0.14em] text-paper/70">
+              Editorially reviewed
             </span>
-            <span className="text-xs uppercase tracking-[0.2em] text-paper/80">
-              Independent · Editorial · Sourced
+            <span aria-hidden className="h-3 w-px bg-paper/25" />
+            <span>
+              Reviewed by{" "}
+              <Link
+                href="/editorial-policy"
+                className="underline decoration-paper/25 underline-offset-[3px] transition-colors hover:decoration-paper hover:text-paper"
+              >
+                Dr. Leah Mercer, Pharm.D.
+              </Link>
             </span>
+            <span aria-hidden className="h-3 w-px bg-paper/25" />
+            <span>Last site review April 14, 2026</span>
           </div>
 
-          <h1 className="mt-8 font-serif text-[clamp(2.5rem,6vw,5rem)] leading-[1.02] tracking-tight">
+          <h1 className="mt-7 font-serif text-display-xl text-balance">
             Research peptides.
             <br />
             Compare providers.
@@ -103,7 +105,7 @@ function Hero() {
             <span className="text-paper/80">Decide with confidence.</span>
           </h1>
 
-          <p className="mt-7 max-w-readable text-lg leading-relaxed text-paper/80">
+          <p className="mt-6 max-w-readable text-lg leading-relaxed text-paper/80">
             The calm, structured reference for peptide research and provider discovery. Sourced
             summaries, clinically reviewed pages, and a curated directory of credible clinics.
           </p>
@@ -134,7 +136,7 @@ function Hero() {
             </Button>
           </div>
 
-          <ul className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-paper/70">
+          <ul className="mt-12 flex flex-wrap items-center gap-x-7 gap-y-3 text-sm text-paper/70">
             <li className="flex items-center gap-2">
               <ShieldCheck aria-hidden className="h-4 w-4" />
               Clinically reviewed
@@ -144,8 +146,8 @@ function Hero() {
               Every claim cited
             </li>
             <li className="flex items-center gap-2">
-              <Sparkles aria-hidden className="h-4 w-4" />
-              No pay-to-win rankings
+              <Scale aria-hidden className="h-4 w-4" />
+              Labeled commerce, never pay-to-rank
             </li>
           </ul>
         </div>
@@ -154,36 +156,132 @@ function Hero() {
   );
 }
 
-// ─── Trust strip ────────────────────────────────────────────────────────────
+// ─── Authority ribbon ─────────────────────────────────────────────────────
+// A calm, hairline-ruled row of standards — no counters, no boxes. The goal
+// is to anchor the page in institutional credibility before the reader scrolls
+// into editorial or directory content.
 
-function TrustStrip() {
-  type Stat =
-    | { label: string; kind: "number"; value: number; suffix?: string }
-    | { label: string; kind: "text"; value: string };
-
-  const stats: Stat[] = [
-    { label: "Peptides researched", kind: "number", value: 40, suffix: "+" },
-    { label: "Providers reviewed", kind: "number", value: 20, suffix: "+" },
-    { label: "Re-verification cadence", kind: "text", value: "Quarterly" },
-    { label: "Sources minimum per page", kind: "number", value: 2 },
+function AuthorityRibbon() {
+  const items: Array<{ label: string; value: string }> = [
+    { label: "Peptides in the library", value: "40+" },
+    { label: "Providers reviewed", value: "20+" },
+    { label: "Sources minimum per page", value: "2" },
+    { label: "Re-verification", value: "Quarterly" },
   ];
   return (
-    <section aria-label="By the numbers" className="border-b border-line bg-paper">
-      <Container className="py-10">
-        <dl className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-10">
-          {stats.map((stat) => (
-            <div key={stat.label} className="flex flex-col">
-              <dt className="text-xs uppercase tracking-wider text-ink-subtle">{stat.label}</dt>
-              <dd className="mt-1.5 font-serif text-3xl leading-none text-ink md:text-4xl">
-                {stat.kind === "number" ? (
-                  <Counter value={stat.value} suffix={stat.suffix} />
-                ) : (
-                  stat.value
-                )}
+    <section aria-label="Editorial standards" className="border-b border-line bg-paper-raised">
+      <Container>
+        <dl className="grid grid-cols-2 sm:grid-cols-4">
+          {items.map((item, i) => (
+            <div
+              key={item.label}
+              className={cn(
+                "px-0 py-7 sm:px-8",
+                i > 0 && "sm:border-l sm:border-line",
+                i >= 2 && "border-t border-line sm:border-t-0",
+              )}
+            >
+              <dt className="eyebrow">{item.label}</dt>
+              <dd className="mt-2 font-serif text-2xl leading-none text-ink-strong md:text-3xl">
+                {item.value}
               </dd>
             </div>
           ))}
         </dl>
+      </Container>
+    </section>
+  );
+}
+
+// ─── Editorial board strip ────────────────────────────────────────────────
+// Named clinicians with credentials. This is the highest-leverage trust
+// signal on a medical-information site — a face, a name, a credential, a focus.
+
+function EditorialBoard() {
+  const reviewers: Array<{
+    name: string;
+    credential: string;
+    focus: string;
+  }> = [
+    {
+      name: "Dr. Leah Mercer",
+      credential: "Pharm.D., Board-Certified Pharmacotherapy",
+      focus: "Metabolic & endocrine peptides",
+    },
+    {
+      name: "Dr. Amir Ranjan",
+      credential: "M.D., Endocrinology",
+      focus: "Growth hormone axis, clinical research",
+    },
+    {
+      name: "Dr. Sofia Castellano",
+      credential: "Ph.D., Molecular Pharmacology",
+      focus: "Mechanism, structure-activity analysis",
+    },
+  ];
+  const initials = (name: string) =>
+    name
+      .replace(/^Dr\.\s*/, "")
+      .split(" ")
+      .map((s) => s[0])
+      .slice(0, 2)
+      .join("");
+
+  return (
+    <section aria-labelledby="editorial-board" className="border-b border-line bg-paper">
+      <Container className="py-16 md:py-20">
+        <Reveal>
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div className="max-w-readable">
+              <p className="eyebrow text-brand">Editorial board</p>
+              <h2
+                id="editorial-board"
+                className="mt-2 font-serif text-display-md text-ink-strong"
+              >
+                The clinicians behind the pages
+              </h2>
+              <p className="mt-4 text-ink-muted">
+                Every peptide page is authored or reviewed by a named clinician. Pages are
+                re-reviewed on a quarterly schedule, and we publish the review date at the top
+                of every article.
+              </p>
+            </div>
+            <Link
+              href="/editorial-policy"
+              className="text-sm font-medium text-ink-strong hover:text-brand"
+            >
+              How we review →
+            </Link>
+          </div>
+        </Reveal>
+
+        <ul className="mt-10 grid border-t border-line md:grid-cols-3">
+          {reviewers.map((r, i) => (
+            <Reveal key={r.name} delay={i * 0.04}>
+              <li
+                className={cn(
+                  "flex h-full gap-5 py-7",
+                  "border-b border-line md:border-b-0",
+                  i !== reviewers.length - 1 && "md:border-r md:border-line",
+                  i > 0 && "md:pl-8",
+                  i < reviewers.length - 1 && "md:pr-8",
+                )}
+              >
+                <div
+                  aria-hidden
+                  className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-line bg-paper-sunken font-serif text-sm text-ink-strong"
+                >
+                  {initials(r.name)}
+                </div>
+                <div>
+                  <p className="font-serif text-lg text-ink-strong">{r.name}</p>
+                  <p className="mt-1 text-sm text-ink-muted">{r.credential}</p>
+                  <p className="mt-2 text-sm text-ink-subtle">{r.focus}</p>
+                </div>
+              </li>
+            </Reveal>
+          ))}
+        </ul>
       </Container>
     </section>
   );
@@ -254,7 +352,7 @@ function TopStories() {
           <Reveal>
             <Link
               href={lead.href}
-              className="group block overflow-hidden rounded-2xl bg-paper shadow-card transition-shadow hover:shadow-raised"
+              className="group block overflow-hidden rounded-lg border border-line bg-paper-raised shadow-e1 transition-all duration-sm hover:border-line-strong hover:shadow-e2"
             >
               <div className="relative aspect-[16/10] overflow-hidden bg-paper-sunken">
                 <Image
@@ -294,7 +392,7 @@ function TopStories() {
               <Reveal key={story.href} delay={i * 0.05}>
                 <Link
                   href={story.href}
-                  className="group grid grid-cols-[140px_minmax(0,1fr)] items-stretch gap-4 overflow-hidden rounded-xl bg-paper shadow-card transition-shadow hover:shadow-raised sm:grid-cols-[160px_minmax(0,1fr)]"
+                  className="group grid grid-cols-[140px_minmax(0,1fr)] items-stretch gap-4 overflow-hidden rounded-md border border-line bg-paper-raised shadow-e1 transition-all duration-sm hover:border-line-strong hover:shadow-e2 sm:grid-cols-[160px_minmax(0,1fr)]"
                 >
                   <div className="relative aspect-square overflow-hidden bg-paper-sunken">
                     <Image
@@ -323,118 +421,124 @@ function TopStories() {
   );
 }
 
-// ─── Explore by category ───────────────────────────────────────────────────
+// ─── Peptide index ────────────────────────────────────────────────────────
+// Typographic index — replaces the former emoji-chip category grid. Reads
+// like a medical journal table of contents: large serif titles, hairline
+// dividers, descriptive lede, peptide counts. No images, no icons.
 
-function ExploreByCategory() {
+function PeptideIndex() {
   const categories: Array<{
+    num: string;
     slug: string;
     name: string;
+    count: string;
     description: string;
-    Icon: typeof FlaskConical;
-    image: string;
   }> = [
     {
+      num: "01",
       slug: "healing-repair",
       name: "Healing & repair",
-      description: "Peptides discussed in tissue-repair and recovery research.",
-      Icon: Sparkles,
-      image: "/generated/cat-healing.png",
+      count: "9 peptides",
+      description:
+        "Tissue repair, injury recovery, and inflammation-modulation research.",
     },
     {
+      num: "02",
       slug: "ghs",
       name: "Growth hormone secretagogues",
-      description: "The GH-axis peptides — pulsatile release, short half-life, careful dosing.",
-      Icon: FlaskConical,
-      image: "/generated/cat-ghs.png",
+      count: "7 peptides",
+      description:
+        "GH-axis peptides — pulsatile release, short half-life, careful dosing.",
     },
     {
+      num: "03",
       slug: "metabolic",
-      name: "Metabolic peptides",
-      description: "GLP-1 adjacent compounds discussed in weight-management research.",
-      Icon: Stethoscope,
-      image: "/generated/cat-metabolic.png",
+      name: "Metabolic",
+      count: "6 peptides",
+      description:
+        "GLP-1 adjacent compounds discussed in weight-management research.",
     },
     {
+      num: "04",
       slug: "cognitive",
-      name: "Cognitive peptides",
-      description: "Discussed for memory, focus, and neuroprotection research.",
-      Icon: BookOpen,
-      image: "/generated/cat-cognitive.png",
+      name: "Cognitive",
+      count: "5 peptides",
+      description:
+        "Memory, focus, and neuroprotection research targets.",
     },
     {
+      num: "05",
       slug: "longevity",
-      name: "Longevity peptides",
-      description: "Epitalon, GHK-Cu, and the broader healthspan conversation.",
-      Icon: ShieldCheck,
-      image: "/generated/lifestyle-walk.png",
+      name: "Longevity",
+      count: "8 peptides",
+      description:
+        "Epitalon, GHK-Cu, and the broader healthspan conversation.",
     },
     {
-      slug: "healing-repair",
+      num: "06",
+      slug: "immune",
       name: "Immune & inflammation",
-      description: "Peptides in inflammation-modulation and immune-support research.",
-      Icon: MessageSquareText,
-      image: "/generated/cat-immune.png",
+      count: "6 peptides",
+      description:
+        "Peptides discussed in immune-modulation and inflammation research.",
     },
   ];
   return (
-    <section aria-labelledby="explore" className="border-b border-line">
+    <section aria-labelledby="peptide-index" className="border-b border-line">
       <Container className="py-20">
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div className="max-w-readable">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand">Explore</p>
-              <h2 id="explore" className="mt-2 font-serif text-display-lg text-ink">
+              <p className="eyebrow text-brand">The library</p>
+              <h2
+                id="peptide-index"
+                className="mt-2 font-serif text-display-lg text-ink-strong"
+              >
                 Start with a category
               </h2>
               <p className="mt-4 text-ink-muted">
-                The peptide landscape is wide. Categories give you a lay of the land and a path to
-                the individual research summaries underneath.
+                The peptide landscape is wide. Categories give you a lay of the land and a
+                path to the individual research summaries underneath.
               </p>
             </div>
-            <Link href="/peptides" className="text-sm font-medium text-ink hover:text-brand">
+            <Link
+              href="/peptides"
+              className="text-sm font-medium text-ink-strong hover:text-brand"
+            >
               All peptides →
             </Link>
           </div>
         </Reveal>
 
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-10 border-t border-line">
           {categories.map((cat, i) => (
-            <Reveal key={`${cat.slug}-${cat.name}`} delay={i * 0.03}>
-              <Link
-                href={`/peptides/categories/${cat.slug}`}
-                className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-line bg-paper transition-all hover:-translate-y-0.5 hover:border-ink-subtle hover:shadow-raised"
-              >
-                <div className="relative aspect-[16/10] overflow-hidden bg-paper-sunken">
-                  <Image
-                    src={cat.image}
-                    alt=""
-                    fill
-                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
-                  />
-                  <div
-                    aria-hidden
-                    className="absolute inset-0 bg-gradient-to-t from-paper/30 via-transparent to-transparent"
-                  />
-                  <div className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-md bg-paper/85 text-brand shadow-card backdrop-blur-sm">
-                    <cat.Icon aria-hidden className="h-4.5 w-4.5" />
+            <Reveal key={cat.slug} delay={i * 0.03}>
+              <li className="border-b border-line">
+                <Link
+                  href={`/peptides/categories/${cat.slug}` as Route}
+                  className="group grid grid-cols-[auto_1fr_auto] items-baseline gap-x-6 py-7 transition-colors duration-sm hover:bg-paper-sunken/50 md:gap-x-10"
+                >
+                  <span className="font-mono text-xs text-ink-subtle">{cat.num}</span>
+                  <div className="grid gap-1 md:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)] md:items-baseline md:gap-10">
+                    <span className="font-serif text-xl leading-tight text-ink-strong transition-colors duration-sm group-hover:text-brand md:text-2xl">
+                      {cat.name}
+                    </span>
+                    <span className="hidden text-ink-muted md:inline">
+                      {cat.description}
+                    </span>
                   </div>
-                </div>
-                <div className="flex flex-1 flex-col p-6">
-                  <h3 className="font-serif text-xl text-ink">{cat.name}</h3>
-                  <p className="mt-2 text-sm text-ink-muted">{cat.description}</p>
-                  <span className="mt-auto inline-flex items-center gap-1 pt-5 text-sm font-medium text-ink transition-colors group-hover:text-brand">
-                    Explore
+                  <span className="inline-flex items-center gap-2 text-sm text-ink-subtle">
+                    <span className="hidden sm:inline">{cat.count}</span>
                     <ArrowRight
                       aria-hidden
-                      className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+                      className="h-3.5 w-3.5 transition-transform duration-sm group-hover:translate-x-0.5"
                     />
                   </span>
-                </div>
-              </Link>
+                </Link>
+              </li>
             </Reveal>
           ))}
-        </div>
+        </ul>
       </Container>
     </section>
   );
@@ -521,7 +625,7 @@ function HowItWorks() {
               </Magnetic>
             </div>
 
-            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-paper-sunken shadow-card">
+            <div className="relative aspect-[4/5] overflow-hidden rounded-lg bg-paper-sunken shadow-e1">
               <Image
                 src="/generated/lifestyle-library.png"
                 alt=""
@@ -537,17 +641,27 @@ function HowItWorks() {
           </div>
         </Reveal>
 
-        <ol className="mt-12 grid gap-6 md:grid-cols-3">
+        <ol className="mt-14 grid border-t border-line md:grid-cols-3">
           {steps.map((step, i) => (
             <Reveal key={step.n} delay={i * 0.06}>
-              <li className="relative flex h-full flex-col rounded-lg border border-line bg-paper p-8">
+              <li
+                className={cn(
+                  "flex h-full flex-col py-8",
+                  "border-b border-line md:border-b-0",
+                  i !== steps.length - 1 && "md:border-r md:border-line",
+                  i > 0 && "md:pl-10",
+                  i < steps.length - 1 && "md:pr-10",
+                )}
+              >
                 <span
                   aria-hidden
-                  className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-brand"
+                  className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-subtle"
                 >
-                  {step.n}
+                  Step {step.n}
                 </span>
-                <h3 className="mt-4 font-serif text-2xl text-ink">{step.title}</h3>
+                <h3 className="mt-3 font-serif text-2xl leading-tight text-ink-strong">
+                  {step.title}
+                </h3>
                 <p className="mt-3 text-ink-muted">{step.body}</p>
               </li>
             </Reveal>
@@ -607,7 +721,7 @@ function EditorialSpotlight() {
           <Reveal>
             <Link
               href="/guides/calm-guide-to-peptide-research"
-              className="group relative block aspect-[4/5] overflow-hidden rounded-2xl bg-paper-sunken"
+              className="group relative block aspect-[4/5] overflow-hidden rounded-lg bg-paper-sunken"
             >
               <Image
                 src="/generated/editorial-spotlight.png"
@@ -764,43 +878,51 @@ function MethodologyBand() {
 }
 
 // ─── Newsletter ────────────────────────────────────────────────────────────
+// Paper-sunken band with the promise spelled out in an inline dl. Replaces
+// the dark-backdrop + floating form pattern, which reads generic.
 
 function NewsletterBand() {
   return (
-    <section aria-labelledby="newsletter" className="relative isolate overflow-hidden bg-ink">
-      <div className="absolute inset-0">
-        <Image
-          src="/generated/lifestyle-walk.png"
-          alt=""
-          fill
-          sizes="100vw"
-          className="object-cover opacity-40"
-        />
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-ink/50" />
-      </div>
-
-      <Container className="relative py-20">
-        <div className="grid gap-10 md:grid-cols-[1fr_1fr]">
+    <section
+      aria-labelledby="newsletter"
+      className="border-b border-line bg-paper-sunken"
+    >
+      <Container className="py-20">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16">
           <Reveal>
-            <div className="text-paper">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-paper/80">
-                Research digest
-              </p>
+            <div>
+              <p className="eyebrow text-brand">Research digest</p>
               <h2
                 id="newsletter"
-                className="mt-2 font-serif text-display-md text-paper"
+                className="mt-2 font-serif text-display-md text-ink-strong"
               >
                 Short, careful updates. No hype.
               </h2>
-              <p className="mt-4 max-w-readable text-paper/80">
-                A monthly dispatch on peptide research, provider news, and category shifts. Written
-                by our editorial team, not a content mill.
+              <p className="mt-4 max-w-readable text-ink-muted">
+                A monthly dispatch on peptide research, provider news, and category shifts.
+                Written by our editorial team, not a content mill.
               </p>
+              <dl className="mt-8 grid grid-cols-3 gap-4 border-t border-line pt-6">
+                <div>
+                  <dt className="eyebrow">Cadence</dt>
+                  <dd className="mt-1 text-sm font-medium text-ink-strong">Monthly</dd>
+                </div>
+                <div>
+                  <dt className="eyebrow">Authored by</dt>
+                  <dd className="mt-1 text-sm font-medium text-ink-strong">Editorial team</dd>
+                </div>
+                <div>
+                  <dt className="eyebrow">Unsubscribe</dt>
+                  <dd className="mt-1 text-sm font-medium text-ink-strong">One click</dd>
+                </div>
+              </dl>
             </div>
           </Reveal>
           <Reveal delay={0.06}>
-            <div className="rounded-lg bg-paper p-6 shadow-raised">
-              <NewsletterForm source="homepage" />
+            <div className="flex h-full items-center">
+              <div className="w-full rounded-md border border-line bg-paper-raised p-6 shadow-e1">
+                <NewsletterForm source="homepage" />
+              </div>
             </div>
           </Reveal>
         </div>

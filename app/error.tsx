@@ -18,17 +18,29 @@ export default function ErrorBoundary({
   }, [error]);
 
   return (
-    <Container className="py-32 text-center">
-      <p className="text-xs uppercase tracking-wider text-ink-subtle">Something went wrong</p>
-      <h1 className="mt-4 font-serif text-display-md text-ink">We hit an unexpected error.</h1>
-      <p className="mx-auto mt-4 max-w-readable text-ink-muted">
-        Our team has been notified. You can try again, or head back to the homepage.
-      </p>
-      <div className="mt-8 flex justify-center gap-3">
-        <Button onClick={reset}>Try again</Button>
-        <Button asChild variant="secondary">
-          <Link href="/">Homepage</Link>
-        </Button>
+    <Container className="py-28 md:py-36">
+      <div className="mx-auto max-w-xl text-center">
+        <p className="eyebrow text-danger">Unexpected error</p>
+        <h1 className="mt-4 font-serif text-display-md text-ink-strong text-balance">
+          Something went wrong on our side.
+        </h1>
+        <p className="mx-auto mt-5 max-w-readable text-ink-muted">
+          Our team has been notified. You can retry, head back to the homepage, or reach out if
+          the issue persists.
+        </p>
+        {error.digest ? (
+          <p className="mx-auto mt-6 inline-block rounded-sm border border-line bg-paper-sunken px-3 py-1.5 font-mono text-xs text-ink-subtle">
+            Reference · {error.digest}
+          </p>
+        ) : null}
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+          <Button onClick={reset} size="lg" variant="brand">
+            Try again
+          </Button>
+          <Button asChild size="lg" variant="secondary">
+            <Link href="/">Homepage</Link>
+          </Button>
+        </div>
       </div>
     </Container>
   );

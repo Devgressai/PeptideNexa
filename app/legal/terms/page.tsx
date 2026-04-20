@@ -14,7 +14,7 @@ export default function TermsPage() {
   return (
     <>
       <header className="border-b border-line bg-paper">
-        <Container className="py-12">
+        <Container className="py-12 md:py-16">
           <Breadcrumbs
             items={[
               { label: "Home", href: "/" },
@@ -22,7 +22,10 @@ export default function TermsPage() {
               { label: "Terms of use" },
             ]}
           />
-          <h1 className="mt-4 font-serif text-display-lg text-ink">Terms of use</h1>
+          <p className="eyebrow mt-6">Legal</p>
+          <h1 className="mt-3 font-serif text-display-lg text-ink-strong text-balance">
+            Terms of use
+          </h1>
         </Container>
       </header>
       <Container className="py-12">

@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { FormField } from "@/components/ui/form-field";
 import {
   Select,
   SelectContent,
@@ -171,8 +172,8 @@ function Progress({ stepIndex }: { stepIndex: number }) {
           <span
             aria-current={i === stepIndex ? "step" : undefined}
             className={cn(
-              "h-1.5 w-10 rounded-full transition-colors",
-              i <= stepIndex ? "bg-brand" : "bg-line",
+              "h-1 w-10 rounded-[1px] transition-colors duration-sm",
+              i <= stepIndex ? "bg-brand" : "bg-line-strong",
             )}
           />
           {i < STEPS.length - 1 ? <span aria-hidden className="h-px w-1 bg-line" /> : null}
@@ -191,17 +192,19 @@ function GoalStep({ form }: StepProps) {
   const selected = form.watch("intentGoalSlug");
   return (
     <fieldset className="flex flex-col gap-4">
-      <legend className="font-serif text-display-md text-ink">What are you researching?</legend>
+      <legend className="font-serif text-display-md text-ink-strong">
+        What are you researching?
+      </legend>
       <p className="text-sm text-ink-muted">Pick whichever is closest. You can refine later.</p>
       <div className="grid gap-2 sm:grid-cols-2">
         {GOALS.map((goal) => (
           <label
             key={goal.slug}
             className={cn(
-              "flex cursor-pointer flex-col rounded-lg border bg-paper p-4 transition-colors",
+              "flex cursor-pointer flex-col rounded-md border bg-paper-raised p-4 transition-colors duration-sm",
               selected === goal.slug
-                ? "border-brand ring-1 ring-brand"
-                : "border-line hover:border-ink-subtle",
+                ? "border-brand bg-brand-soft/40 ring-1 ring-brand"
+                : "border-line hover:border-line-strong hover:bg-paper-sunken/50",
             )}
           >
             <input
@@ -211,8 +214,8 @@ function GoalStep({ form }: StepProps) {
               checked={selected === goal.slug}
               onChange={() => form.setValue("intentGoalSlug", goal.slug)}
             />
-            <span className="font-medium text-ink">{goal.label}</span>
-            <span className="mt-1 text-xs text-ink-muted">{goal.description}</span>
+            <span className="font-medium text-ink-strong">{goal.label}</span>
+            <span className="mt-1 text-xs leading-relaxed text-ink-muted">{goal.description}</span>
           </label>
         ))}
       </div>
@@ -224,7 +227,9 @@ function PreferenceStep({ form }: StepProps) {
   const online = form.watch("onlineOk");
   return (
     <fieldset className="flex flex-col gap-4">
-      <legend className="font-serif text-display-md text-ink">Online or in person?</legend>
+      <legend className="font-serif text-display-md text-ink-strong">
+        Online or in person?
+      </legend>
       <p className="text-sm text-ink-muted">
         Both are valid. Telehealth is more widely available; in-person clinics can be a better fit
         for some research directions.
@@ -261,13 +266,15 @@ function PreferenceOption({
   return (
     <label
       className={cn(
-        "flex cursor-pointer flex-col rounded-lg border bg-paper p-4 transition-colors",
-        selected ? "border-brand ring-1 ring-brand" : "border-line hover:border-ink-subtle",
+        "flex cursor-pointer flex-col rounded-md border bg-paper-raised p-4 transition-colors duration-sm",
+        selected
+          ? "border-brand bg-brand-soft/40 ring-1 ring-brand"
+          : "border-line hover:border-line-strong hover:bg-paper-sunken/50",
       )}
     >
       <input type="radio" className="sr-only" checked={selected} onChange={onSelect} />
-      <span className="font-medium text-ink">{label}</span>
-      <span className="mt-1 text-xs text-ink-muted">{description}</span>
+      <span className="font-medium text-ink-strong">{label}</span>
+      <span className="mt-1 text-xs leading-relaxed text-ink-muted">{description}</span>
     </label>
   );
 }
@@ -275,7 +282,7 @@ function PreferenceOption({
 function LocationStep({ form }: StepProps) {
   return (
     <fieldset className="flex flex-col gap-4">
-      <legend className="font-serif text-display-md text-ink">Where are you?</legend>
+      <legend className="font-serif text-display-md text-ink-strong">Where are you?</legend>
       <p className="text-sm text-ink-muted">
         We filter providers by licensing and reach. Two-letter state code.
       </p>
@@ -304,7 +311,9 @@ function LocationStep({ form }: StepProps) {
 function BudgetStep({ form }: StepProps) {
   return (
     <fieldset className="flex flex-col gap-4">
-      <legend className="font-serif text-display-md text-ink">Rough monthly budget</legend>
+      <legend className="font-serif text-display-md text-ink-strong">
+        Rough monthly budget
+      </legend>
       <p className="text-sm text-ink-muted">
         Helps us surface providers in the right price range. Skip if you&rsquo;re not sure.
       </p>
@@ -329,61 +338,65 @@ function BudgetStep({ form }: StepProps) {
 function ContactStep({ form }: StepProps) {
   return (
     <fieldset className="flex flex-col gap-4">
-      <legend className="font-serif text-display-md text-ink">Where should we send matches?</legend>
+      <legend className="font-serif text-display-md text-ink-strong">
+        Where should we send matches?
+      </legend>
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Email" htmlFor="email" required error={form.formState.errors.email?.message}>
-          <Input id="email" type="email" autoComplete="email" {...form.register("email")} />
-        </Field>
-        <Field label="Name" htmlFor="name" error={form.formState.errors.name?.message}>
-          <Input id="name" autoComplete="name" {...form.register("name")} />
-        </Field>
+        <FormField htmlFor="email" label="Email" required error={form.formState.errors.email?.message}>
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            state={form.formState.errors.email ? "error" : "default"}
+            {...form.register("email")}
+          />
+        </FormField>
+        <FormField htmlFor="name" label="Name" error={form.formState.errors.name?.message}>
+          <Input
+            id="name"
+            autoComplete="name"
+            state={form.formState.errors.name ? "error" : "default"}
+            {...form.register("name")}
+          />
+        </FormField>
       </div>
-      <Field label="Phone (optional)" htmlFor="phone" error={form.formState.errors.phone?.message}>
-        <Input id="phone" type="tel" autoComplete="tel" {...form.register("phone")} />
-      </Field>
-      <Field
-        label="Anything else we should know?"
+      <FormField
+        htmlFor="phone"
+        label="Phone"
+        hint="Optional"
+        error={form.formState.errors.phone?.message}
+      >
+        <Input
+          id="phone"
+          type="tel"
+          autoComplete="tel"
+          state={form.formState.errors.phone ? "error" : "default"}
+          {...form.register("phone")}
+        />
+      </FormField>
+      <FormField
         htmlFor="notes"
+        label="Anything else we should know?"
         error={form.formState.errors.notes?.message}
       >
-        <Textarea id="notes" rows={3} {...form.register("notes")} />
-      </Field>
-      <label className="flex items-start gap-2 text-xs text-ink-muted">
-        <input type="checkbox" className="mt-0.5 h-4 w-4 rounded border-line" {...form.register("consent")} />
+        <Textarea
+          id="notes"
+          rows={3}
+          state={form.formState.errors.notes ? "error" : "default"}
+          {...form.register("notes")}
+        />
+      </FormField>
+      <label className="flex items-start gap-2 text-xs leading-relaxed text-ink-muted">
+        <input
+          type="checkbox"
+          className="mt-0.5 h-4 w-4 rounded-sm border-line-strong accent-brand"
+          {...form.register("consent")}
+        />
         <span>
           I agree to be contacted about peptide providers and understand PeptideNexa is not a
           medical provider.
         </span>
       </label>
     </fieldset>
-  );
-}
-
-function Field({
-  label,
-  htmlFor,
-  error,
-  required,
-  children,
-}: {
-  label: string;
-  htmlFor: string;
-  error?: string;
-  required?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor={htmlFor}>
-        {label}
-        {required ? <span aria-hidden className="ml-1 text-danger">*</span> : null}
-      </Label>
-      {children}
-      {error ? (
-        <p className="text-xs text-danger" role="alert">
-          {error}
-        </p>
-      ) : null}
-    </div>
   );
 }

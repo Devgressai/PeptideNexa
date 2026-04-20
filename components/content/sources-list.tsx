@@ -13,10 +13,15 @@ export function SourcesList({ sources }: SourcesListProps) {
   if (sources.length === 0) return null;
   return (
     <section aria-labelledby="sources-heading" className="mt-16">
-      <h2 id="sources-heading" className="font-serif text-display-md text-ink">
-        Sources
-      </h2>
-      <ol className="mt-6 space-y-3 border-l border-line pl-6 text-sm text-ink-muted">
+      <div className="flex items-baseline justify-between gap-4">
+        <h2 id="sources-heading" className="font-serif text-display-md text-ink-strong">
+          Sources
+        </h2>
+        <p className="font-mono text-xs text-ink-subtle">
+          {sources.length} {sources.length === 1 ? "citation" : "citations"}
+        </p>
+      </div>
+      <ol className="mt-6 space-y-4 border-l border-line pl-6 text-sm leading-relaxed text-ink-muted">
         {sources.map((source, index) => (
           <li key={source.url} className="relative">
             <span aria-hidden className="absolute -left-7 font-mono text-xs text-ink-subtle">
@@ -26,7 +31,7 @@ export function SourcesList({ sources }: SourcesListProps) {
               href={source.url}
               rel="nofollow noopener external"
               target="_blank"
-              className="text-ink transition-colors hover:text-brand"
+              className="font-medium text-ink-strong transition-colors duration-sm hover:text-brand focus-ring rounded-sm"
             >
               {source.title}
             </a>

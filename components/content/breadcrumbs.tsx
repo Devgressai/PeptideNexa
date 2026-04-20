@@ -19,18 +19,23 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
           return (
             <li key={`${crumb.label}-${index}`} className="flex items-center gap-1">
               {crumb.href && !isLast ? (
-                <Link href={crumb.href} className="transition-colors hover:text-ink">
+                <Link
+                  href={crumb.href}
+                  className="transition-colors duration-sm hover:text-ink-strong focus-ring rounded-sm"
+                >
                   {crumb.label}
                 </Link>
               ) : (
                 <span
                   aria-current={isLast ? "page" : undefined}
-                  className={cn(isLast && "text-ink")}
+                  className={cn(isLast && "font-medium text-ink-strong")}
                 >
                   {crumb.label}
                 </span>
               )}
-              {!isLast ? <ChevronRight aria-hidden className="h-3 w-3" /> : null}
+              {!isLast ? (
+                <ChevronRight aria-hidden className="h-3 w-3 text-ink-faint" />
+              ) : null}
             </li>
           );
         })}
