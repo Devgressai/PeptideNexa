@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import {
   ArrowRight,
@@ -63,58 +64,75 @@ function Hero() {
     <section className="relative overflow-hidden border-b border-line bg-paper">
       <HeroPattern className="pointer-events-none absolute inset-0 h-full w-full" />
 
-      <Container className="relative py-24 md:py-32 lg:py-36">
-        <div className="max-w-3xl">
-          <div className="flex items-center gap-2">
-            <span className="relative inline-flex h-2 w-2 items-center justify-center">
-              <span className="absolute h-2 w-2 animate-ping rounded-full bg-brand opacity-40" />
-              <span className="relative h-1.5 w-1.5 rounded-full bg-brand" />
-            </span>
-            <Badge variant="muted">Independent · Editorial · Sourced</Badge>
+      <Container className="relative py-20 md:py-28 lg:py-32">
+        <div className="grid items-center gap-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-24">
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="relative inline-flex h-2 w-2 items-center justify-center">
+                <span className="absolute h-2 w-2 animate-ping rounded-full bg-brand opacity-40" />
+                <span className="relative h-1.5 w-1.5 rounded-full bg-brand" />
+              </span>
+              <Badge variant="muted">Independent · Editorial · Sourced</Badge>
+            </div>
+
+            <h1 className="mt-7 font-serif text-display-xl text-ink">
+              Research peptides.
+              <br />
+              <span className="text-brand">Compare providers.</span>
+              <br />
+              Decide with confidence.
+            </h1>
+
+            <p className="mt-7 max-w-readable text-lg leading-relaxed text-ink-muted">
+              The calm, structured reference for peptide research and provider discovery. No hype,
+              no pay-to-win rankings — just sourced summaries and independently reviewed clinics.
+            </p>
+
+            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+              <Button asChild size="lg" className="gap-2">
+                <Link href="/match">
+                  Find a provider
+                  <ArrowRight aria-hidden className="h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="secondary">
+                <Link href="/peptides">Browse the library</Link>
+              </Button>
+            </div>
+
+            <dl className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-3 text-sm text-ink-muted">
+              <div className="flex items-center gap-2">
+                <ShieldCheck aria-hidden className="h-4 w-4 text-brand" />
+                <dt className="sr-only">Review</dt>
+                <dd>Clinically reviewed content</dd>
+              </div>
+              <div className="flex items-center gap-2">
+                <FileText aria-hidden className="h-4 w-4 text-brand" />
+                <dt className="sr-only">Citations</dt>
+                <dd>Every claim cited</dd>
+              </div>
+              <div className="flex items-center gap-2">
+                <Sparkles aria-hidden className="h-4 w-4 text-brand" />
+                <dt className="sr-only">Independence</dt>
+                <dd>No pay-to-win rankings</dd>
+              </div>
+            </dl>
           </div>
 
-          <h1 className="mt-7 font-serif text-display-xl text-ink">
-            Research peptides.
-            <br />
-            <span className="text-brand">Compare providers.</span>
-            <br />
-            Decide with confidence.
-          </h1>
-
-          <p className="mt-7 max-w-readable text-lg leading-relaxed text-ink-muted">
-            The calm, structured reference for peptide research and provider discovery. No hype,
-            no pay-to-win rankings — just sourced summaries and independently reviewed clinics.
-          </p>
-
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <Button asChild size="lg" className="gap-2">
-              <Link href="/match">
-                Find a provider
-                <ArrowRight aria-hidden className="h-4 w-4" />
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="secondary">
-              <Link href="/peptides">Browse the library</Link>
-            </Button>
+          <div className="relative hidden aspect-square overflow-hidden rounded-2xl shadow-raised lg:block">
+            <Image
+              src="/generated/hero-molecular.png"
+              alt="Abstract molecular rendering"
+              fill
+              priority
+              sizes="(min-width: 1024px) 40vw, 100vw"
+              className="object-cover"
+            />
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-gradient-to-tr from-paper/40 via-transparent to-transparent mix-blend-soft-light"
+            />
           </div>
-
-          <dl className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-3 text-sm text-ink-muted">
-            <div className="flex items-center gap-2">
-              <ShieldCheck aria-hidden className="h-4 w-4 text-brand" />
-              <dt className="sr-only">Review</dt>
-              <dd>Clinically reviewed content</dd>
-            </div>
-            <div className="flex items-center gap-2">
-              <FileText aria-hidden className="h-4 w-4 text-brand" />
-              <dt className="sr-only">Citations</dt>
-              <dd>Every claim cited</dd>
-            </div>
-            <div className="flex items-center gap-2">
-              <Sparkles aria-hidden className="h-4 w-4 text-brand" />
-              <dt className="sr-only">Independence</dt>
-              <dd>No pay-to-win rankings</dd>
-            </div>
-          </dl>
         </div>
       </Container>
     </section>
@@ -154,42 +172,49 @@ function ExploreByCategory() {
     name: string;
     description: string;
     Icon: typeof FlaskConical;
+    image: string;
   }> = [
     {
       slug: "healing-repair",
       name: "Healing & repair",
       description: "Peptides discussed in tissue-repair and recovery research.",
       Icon: Sparkles,
+      image: "/generated/cat-healing.png",
     },
     {
       slug: "ghs",
       name: "Growth hormone secretagogues",
       description: "The GH-axis peptides — pulsatile release, short half-life, careful dosing.",
       Icon: FlaskConical,
+      image: "/generated/cat-ghs.png",
     },
     {
       slug: "metabolic",
       name: "Metabolic peptides",
       description: "GLP-1 adjacent compounds discussed in weight-management research.",
       Icon: Stethoscope,
+      image: "/generated/cat-metabolic.png",
     },
     {
       slug: "cognitive",
       name: "Cognitive peptides",
       description: "Discussed for memory, focus, and neuroprotection research.",
       Icon: BookOpen,
+      image: "/generated/cat-cognitive.png",
     },
     {
       slug: "longevity",
       name: "Longevity peptides",
       description: "Epitalon, GHK-Cu, and the broader healthspan conversation.",
       Icon: ShieldCheck,
+      image: "/generated/cat-longevity.png",
     },
     {
       slug: "healing-repair",
       name: "Immune & inflammation",
       description: "Peptides in inflammation-modulation and immune-support research.",
       Icon: MessageSquareText,
+      image: "/generated/cat-immune.png",
     },
   ];
   return (
@@ -218,20 +243,35 @@ function ExploreByCategory() {
             <Reveal key={`${cat.slug}-${cat.name}`} delay={i * 0.03}>
               <Link
                 href={`/peptides/categories/${cat.slug}`}
-                className="group relative flex h-full flex-col rounded-lg border border-line bg-paper p-6 transition-all hover:border-ink-subtle hover:shadow-card"
+                className="group relative flex h-full flex-col overflow-hidden rounded-lg border border-line bg-paper transition-all hover:-translate-y-0.5 hover:border-ink-subtle hover:shadow-raised"
               >
-                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-brand/10 text-brand">
-                  <cat.Icon aria-hidden className="h-5 w-5" />
-                </div>
-                <h3 className="mt-5 font-serif text-xl text-ink">{cat.name}</h3>
-                <p className="mt-2 text-sm text-ink-muted">{cat.description}</p>
-                <span className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-ink transition-colors group-hover:text-brand">
-                  Explore
-                  <ArrowRight
-                    aria-hidden
-                    className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+                <div className="relative aspect-[16/10] overflow-hidden bg-paper-sunken">
+                  <Image
+                    src={cat.image}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                   />
-                </span>
+                  <div
+                    aria-hidden
+                    className="absolute inset-0 bg-gradient-to-t from-paper/30 via-transparent to-transparent"
+                  />
+                  <div className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-md bg-paper/85 text-brand shadow-card backdrop-blur-sm">
+                    <cat.Icon aria-hidden className="h-4.5 w-4.5" />
+                  </div>
+                </div>
+                <div className="flex flex-1 flex-col p-6">
+                  <h3 className="font-serif text-xl text-ink">{cat.name}</h3>
+                  <p className="mt-2 text-sm text-ink-muted">{cat.description}</p>
+                  <span className="mt-auto inline-flex items-center gap-1 pt-5 text-sm font-medium text-ink transition-colors group-hover:text-brand">
+                    Explore
+                    <ArrowRight
+                      aria-hidden
+                      className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+                    />
+                  </span>
+                </div>
               </Link>
             </Reveal>
           ))}
@@ -381,44 +421,58 @@ function EditorialSpotlight() {
   return (
     <section aria-labelledby="editorial" className="border-b border-line">
       <Container className="py-20">
-        <div className="grid gap-10 lg:grid-cols-[1fr_1.4fr] lg:gap-20">
+        <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
           <Reveal>
-            <div>
-              <p className="text-xs uppercase tracking-wider text-ink-subtle">Editorial</p>
+            <Link
+              href="/guides/calm-guide-to-peptide-research"
+              className="group relative block aspect-[4/5] overflow-hidden rounded-2xl bg-paper-sunken"
+            >
+              <Image
+                src="/generated/editorial-spotlight.png"
+                alt="Research notebook and lab flask still life"
+                fill
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+              />
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-gradient-to-t from-ink/35 via-ink/10 to-transparent"
+              />
+              <div className="absolute bottom-6 left-6 right-6 text-paper">
+                <p className="text-xs uppercase tracking-wider opacity-80">Editorial</p>
+                <p className="mt-2 font-serif text-2xl leading-tight">
+                  A calm guide to peptide research
+                </p>
+              </div>
+            </Link>
+          </Reveal>
+
+          <Reveal delay={0.06}>
+            <div className="flex h-full flex-col justify-center">
+              <p className="text-xs uppercase tracking-wider text-ink-subtle">From the essay</p>
               <h2 id="editorial" className="mt-2 font-serif text-display-lg text-ink">
                 How to read peptide research without getting hype-pilled
               </h2>
-              <p className="mt-5 text-ink-muted">
-                The peptide conversation online is loud. Our editorial hub is the cold-water
-                counterweight — careful, sourced, specific.
-              </p>
+
+              <blockquote className="mt-10 border-l-2 border-brand pl-6">
+                <p className="font-serif text-xl leading-relaxed text-ink md:text-2xl">
+                  When evaluating any peptide, the first question is mechanism. What does it do at
+                  the receptor level, and which tissues express those receptors? Mechanism tells
+                  you what questions to ask — of the research and of the provider.
+                </p>
+                <footer className="mt-5 text-sm text-ink-subtle">
+                  PeptideNexa Editorial · Calm guide to peptide research
+                </footer>
+              </blockquote>
+
               <Link
                 href="/guides/calm-guide-to-peptide-research"
-                className="mt-8 inline-flex items-center gap-1 text-sm font-medium text-ink hover:text-brand"
+                className="mt-10 inline-flex items-center gap-1 text-sm font-medium text-ink hover:text-brand"
               >
                 Read the guide
                 <ArrowRight aria-hidden className="h-3.5 w-3.5" />
               </Link>
             </div>
-          </Reveal>
-
-          <Reveal delay={0.06}>
-            <blockquote className="relative rounded-lg border border-line bg-paper-raised p-8 md:p-10">
-              <span
-                aria-hidden
-                className="absolute left-8 top-4 font-serif text-6xl leading-none text-brand/20"
-              >
-                &ldquo;
-              </span>
-              <p className="relative font-serif text-xl leading-relaxed text-ink md:text-2xl">
-                When evaluating any peptide, the first question is mechanism. What does it do at the
-                receptor level, and which tissues express those receptors? Mechanism tells you what
-                questions to ask — of the research and of the provider.
-              </p>
-              <footer className="mt-6 text-sm text-ink-subtle">
-                PeptideNexa Editorial · Calm guide to peptide research
-              </footer>
-            </blockquote>
           </Reveal>
         </div>
       </Container>
