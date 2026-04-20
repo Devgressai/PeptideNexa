@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ShieldCheck, ExternalLink } from "lucide-react";
@@ -59,8 +60,23 @@ export default async function ProviderDetailPage({
 
   return (
     <>
-      <header className="border-b border-line bg-paper">
-        <Container className="py-10">
+      <header className="relative overflow-hidden border-b border-line bg-paper">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute right-0 top-0 hidden h-full w-[40%] opacity-70 lg:block"
+        >
+          <Image
+            src="/generated/trust-research.png"
+            alt=""
+            fill
+            sizes="40vw"
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-paper via-paper/80 to-paper/0" />
+        </div>
+
+        <Container className="relative py-12 md:py-16">
           <Breadcrumbs
             items={[
               { label: "Home", href: "/" },
@@ -68,8 +84,8 @@ export default async function ProviderDetailPage({
               { label: provider.name },
             ]}
           />
-          <div className="mt-4 flex flex-wrap items-start justify-between gap-4">
-            <div>
+          <div className="mt-6 flex flex-wrap items-start justify-between gap-6">
+            <div className="max-w-2xl">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant="muted">
                   {provider.type === "ONLINE"
@@ -86,9 +102,11 @@ export default async function ProviderDetailPage({
                   </span>
                 ) : null}
               </div>
-              <h1 className="mt-3 font-serif text-display-lg text-ink">{provider.name}</h1>
-              <p className="mt-3 max-w-readable text-ink-muted">{provider.shortDescription}</p>
-              <LastUpdatedStamp date={provider.lastVerifiedAt} label="Last verified" />
+              <h1 className="mt-4 font-serif text-display-lg text-ink">{provider.name}</h1>
+              <p className="mt-4 text-lg text-ink-muted">{provider.shortDescription}</p>
+              <div className="mt-4">
+                <LastUpdatedStamp date={provider.lastVerifiedAt} label="Last verified" />
+              </div>
             </div>
             <div className="flex flex-col items-stretch gap-2 sm:flex-row">
               <Button asChild size="lg">

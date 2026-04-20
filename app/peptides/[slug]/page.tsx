@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -19,6 +20,17 @@ import { TableOfContents } from "@/components/content/table-of-contents";
 import { ReadingProgress } from "@/components/content/reading-progress";
 import { extractMdxHeadings } from "@/lib/content/mdx-headings";
 import type { PeptideDetail } from "@/lib/content/types";
+
+// Category slug → brand image. Falls through to the generic hero if the
+// category doesn't have a bespoke illustration yet.
+const CATEGORY_IMAGES: Record<string, string> = {
+  "healing-repair": "/generated/cat-healing.png",
+  ghs: "/generated/cat-ghs.png",
+  metabolic: "/generated/cat-metabolic.png",
+  cognitive: "/generated/cat-cognitive.png",
+  longevity: "/generated/cat-longevity.png",
+};
+const DEFAULT_PEPTIDE_IMAGE = "/generated/hero-molecular.png";
 import {
   getPeptideBySlug,
   getPublishedPeptideSlugs,
@@ -69,6 +81,7 @@ export default async function PeptideDetailPage({
   if (!peptide) notFound();
 
   const headings = extractMdxHeadings(peptide.bodyMdx);
+  const coverImage = CATEGORY_IMAGES[peptide.category.slug] ?? DEFAULT_PEPTIDE_IMAGE;
 
   const aside = (
     <>
@@ -81,8 +94,24 @@ export default async function PeptideDetailPage({
   return (
     <>
       <ReadingProgress />
-      <header className="border-b border-line bg-paper">
-        <Container className="py-10">
+      <header className="relative overflow-hidden border-b border-line bg-paper">
+        {/* Cover image anchored top-right, fades into the copy area. Decorative. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute right-0 top-0 hidden h-full w-[46%] opacity-80 lg:block"
+        >
+          <Image
+            src={coverImage}
+            alt=""
+            fill
+            sizes="46vw"
+            className="object-cover"
+            priority
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-paper via-paper/70 to-paper/0" />
+        </div>
+
+        <Container className="relative py-14 md:py-20">
           <Breadcrumbs
             items={[
               { label: "Home", href: "/" },
@@ -90,18 +119,20 @@ export default async function PeptideDetailPage({
               { label: peptide.name },
             ]}
           />
-          <div className="mt-4 flex flex-wrap items-center gap-2">
+          <div className="mt-6 flex flex-wrap items-center gap-2">
             <Badge variant="muted">{peptide.category.name}</Badge>
             {peptide.goals.map((goal) => (
               <Badge key={goal.slug}>{goal.name}</Badge>
             ))}
           </div>
-          <h1 className="mt-4 font-serif text-display-xl text-ink">{peptide.name}</h1>
+          <h1 className="mt-5 max-w-2xl font-serif text-display-xl text-ink">{peptide.name}</h1>
           {peptide.aliases.length > 0 ? (
-            <p className="mt-2 text-sm text-ink-subtle">Also known as {peptide.aliases.join(", ")}</p>
+            <p className="mt-2 text-sm text-ink-subtle">
+              Also known as {peptide.aliases.join(", ")}
+            </p>
           ) : null}
-          <p className="mt-5 max-w-readable text-lg text-ink-muted">{peptide.summary}</p>
-          <div className="mt-6 flex flex-wrap items-center gap-6">
+          <p className="mt-6 max-w-readable text-lg text-ink-muted">{peptide.summary}</p>
+          <div className="mt-7 flex flex-wrap items-center gap-6">
             <Byline author={peptide.author} reviewer={peptide.reviewer} />
             <LastUpdatedStamp date={peptide.lastReviewedAt} />
           </div>
