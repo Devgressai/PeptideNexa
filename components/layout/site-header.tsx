@@ -9,6 +9,7 @@ import { Container } from "./container";
 import { NavLink } from "./nav-link";
 import { MobileNav } from "./mobile-nav";
 import { UtilityBar } from "./utility-bar";
+import { BrowseStrip } from "./browse-strip";
 import { MegaMenuPanel, type MegaMenuKey } from "./mega-menu";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -71,11 +72,12 @@ export function SiteHeader() {
   return (
     <>
       <UtilityBar />
+      <BrowseStrip />
       <header
         className="sticky top-0 z-40 border-b border-line bg-paper/85 backdrop-blur-md"
         onMouseLeave={scheduleClose}
       >
-        <Container className="flex h-16 items-center justify-between gap-6">
+        <Container className="flex h-[72px] items-center justify-between gap-6">
           <Link
             href="/"
             className="flex items-center gap-2.5 rounded-sm transition-opacity duration-sm hover:opacity-80 focus-ring"
@@ -153,11 +155,36 @@ export function SiteHeader() {
             })}
           </nav>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
+            {/* Inline search on lg+; search icon only below that. */}
+            <form
+              role="search"
+              action="/search"
+              method="get"
+              className="hidden lg:block"
+            >
+              <label htmlFor="nav-search" className="sr-only">
+                Search PeptideNexa
+              </label>
+              <div className="relative">
+                <Search
+                  aria-hidden
+                  className="pointer-events-none absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-ink-subtle"
+                />
+                <input
+                  id="nav-search"
+                  name="q"
+                  type="search"
+                  placeholder="Search peptides, providers…"
+                  autoComplete="off"
+                  className="h-9 w-[220px] rounded-sm border border-line bg-paper-sunken/60 pl-8 pr-3 text-[13px] text-ink placeholder:text-ink-subtle transition-colors duration-sm hover:border-line-strong focus-visible:border-brand focus-visible:bg-paper-raised focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 focus-visible:ring-offset-1 focus-visible:ring-offset-paper"
+                />
+              </div>
+            </form>
             <Link
               href="/search"
               aria-label="Search"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-sm text-ink-muted transition-colors duration-sm hover:bg-paper-sunken hover:text-ink-strong focus-ring"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-sm text-ink-muted transition-colors duration-sm hover:bg-paper-sunken hover:text-ink-strong focus-ring lg:hidden"
             >
               <Search aria-hidden className="h-4 w-4" />
             </Link>
