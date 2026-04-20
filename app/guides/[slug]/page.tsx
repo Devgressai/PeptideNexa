@@ -10,6 +10,9 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbSchema, medicalWebPageSchema } from "@/lib/seo/schema";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { Mdx } from "@/lib/content/mdx";
+import { TableOfContents } from "@/components/content/table-of-contents";
+import { ReadingProgress } from "@/components/content/reading-progress";
+import { extractMdxHeadings } from "@/lib/content/mdx-headings";
 import {
   getArticleBySlug,
   getPublishedArticleSlugs,
@@ -51,8 +54,11 @@ export default async function ArticlePage({ params }: { params: Promise<Params> 
   const article = await getArticleBySlug(slug);
   if (!article) notFound();
 
+  const headings = extractMdxHeadings(article.bodyMdx);
+
   return (
     <>
+      <ReadingProgress />
       <header className="border-b border-line bg-paper">
         <Container className="py-10">
           <Breadcrumbs

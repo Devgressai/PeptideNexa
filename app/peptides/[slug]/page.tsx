@@ -15,6 +15,9 @@ import { JsonLd } from "@/components/seo/json-ld";
 import { breadcrumbSchema, medicalWebPageSchema } from "@/lib/seo/schema";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { Mdx } from "@/lib/content/mdx";
+import { TableOfContents } from "@/components/content/table-of-contents";
+import { ReadingProgress } from "@/components/content/reading-progress";
+import { extractMdxHeadings } from "@/lib/content/mdx-headings";
 import type { PeptideDetail } from "@/lib/content/types";
 import {
   getPeptideBySlug,
@@ -65,8 +68,11 @@ export default async function PeptideDetailPage({
   const peptide = await getPeptideBySlug(slug);
   if (!peptide) notFound();
 
+  const headings = extractMdxHeadings(peptide.bodyMdx);
+
   const aside = (
     <>
+      {headings.length > 0 ? <TableOfContents items={headings} /> : null}
       <SpecCard peptide={peptide} />
       <TrustCard peptide={peptide} />
     </>
@@ -74,6 +80,7 @@ export default async function PeptideDetailPage({
 
   return (
     <>
+      <ReadingProgress />
       <header className="border-b border-line bg-paper">
         <Container className="py-10">
           <Breadcrumbs
