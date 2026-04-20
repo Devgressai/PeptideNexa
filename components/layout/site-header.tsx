@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { Container } from "./container";
 import { NavLink } from "./nav-link";
+import { MobileNav } from "./mobile-nav";
 import { Button } from "@/components/ui/button";
 
 const primaryNav: Array<{ label: string; href: Route }> = [
@@ -52,9 +53,10 @@ export function SiteHeader() {
           <Button asChild size="sm" variant="secondary" className="hidden sm:inline-flex">
             <Link href="/search">Search</Link>
           </Button>
-          <Button asChild size="sm">
+          <Button asChild size="sm" className="hidden md:inline-flex">
             <Link href="/match">Find a provider</Link>
           </Button>
+          <MobileNav items={primaryNav} />
         </div>
       </Container>
     </header>
