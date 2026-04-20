@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import type { Metadata } from "next";
+import type { Metadata, Route } from "next";
 import {
   ArrowRight,
   BookOpen,
@@ -14,16 +14,13 @@ import {
 
 import { Container } from "@/components/layout/container";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { PeptideCard } from "@/components/content/peptide-card";
 import { ProviderCard } from "@/components/content/provider-card";
 import { NewsletterForm } from "@/components/forms/newsletter-form";
-import { HeroPattern } from "@/components/content/hero-pattern";
 import { Reveal } from "@/components/content/reveal";
 import { FaqBlock } from "@/components/content/faq-block";
 import { Counter } from "@/components/content/counter";
 import { Magnetic } from "@/components/content/magnetic";
-import { ParallaxImage } from "@/components/content/parallax-image";
 import { buildMetadata } from "@/lib/seo/metadata";
 import type { PeptideSummary, ProviderSummary } from "@/lib/content/types";
 import { getFeaturedPeptides } from "@/lib/db/loaders/peptide";
@@ -48,6 +45,7 @@ export default async function HomePage() {
     <>
       <Hero />
       <TrustStrip />
+      <TopStories />
       <ExploreByCategory />
       <FeaturedPeptides peptides={featuredPeptides} />
       <HowItWorks />
@@ -60,78 +58,96 @@ export default async function HomePage() {
   );
 }
 
-// ─── Hero ───────────────────────────────────────────────────────────────────
+// ─── Hero (Mayo-style cinematic full-bleed) ────────────────────────────────
 
 function Hero() {
   return (
-    <section className="relative overflow-hidden border-b border-line bg-paper">
-      <HeroPattern className="pointer-events-none absolute inset-0 h-full w-full" />
+    <section className="relative isolate overflow-hidden bg-ink">
+      <div className="absolute inset-0">
+        <Image
+          src="/generated/hero-cinematic.png"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover opacity-90"
+        />
+        {/* Three-layer gradient: darken top (legibility), fade into ink on bottom for copy area. */}
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-b from-ink/30 via-ink/30 to-ink/85"
+        />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-r from-ink/70 via-ink/30 to-transparent"
+        />
+      </div>
 
-      <Container className="relative py-20 md:py-28 lg:py-32">
-        <div className="grid items-center gap-16 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-24">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="relative inline-flex h-2 w-2 items-center justify-center">
-                <span className="absolute h-2 w-2 animate-ping rounded-full bg-brand opacity-40" />
-                <span className="relative h-1.5 w-1.5 rounded-full bg-brand" />
-              </span>
-              <Badge variant="muted">Independent · Editorial · Sourced</Badge>
-            </div>
-
-            <h1 className="mt-7 font-serif text-display-xl text-ink">
-              Research peptides.
-              <br />
-              <span className="text-brand">Compare providers.</span>
-              <br />
-              Decide with confidence.
-            </h1>
-
-            <p className="mt-7 max-w-readable text-lg leading-relaxed text-ink-muted">
-              The calm, structured reference for peptide research and provider discovery. No hype,
-              no pay-to-win rankings — just sourced summaries and independently reviewed clinics.
-            </p>
-
-            <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <Magnetic strength={0.2}>
-                <Button asChild size="lg" className="gap-2">
-                  <Link href="/match">
-                    Find a provider
-                    <ArrowRight aria-hidden className="h-4 w-4" />
-                  </Link>
-                </Button>
-              </Magnetic>
-              <Button asChild size="lg" variant="secondary">
-                <Link href="/peptides">Browse the library</Link>
-              </Button>
-            </div>
-
-            <dl className="mt-12 flex flex-wrap items-center gap-x-10 gap-y-3 text-sm text-ink-muted">
-              <div className="flex items-center gap-2">
-                <ShieldCheck aria-hidden className="h-4 w-4 text-brand" />
-                <dt className="sr-only">Review</dt>
-                <dd>Clinically reviewed content</dd>
-              </div>
-              <div className="flex items-center gap-2">
-                <FileText aria-hidden className="h-4 w-4 text-brand" />
-                <dt className="sr-only">Citations</dt>
-                <dd>Every claim cited</dd>
-              </div>
-              <div className="flex items-center gap-2">
-                <Sparkles aria-hidden className="h-4 w-4 text-brand" />
-                <dt className="sr-only">Independence</dt>
-                <dd>No pay-to-win rankings</dd>
-              </div>
-            </dl>
+      <Container className="relative flex min-h-[620px] flex-col justify-end py-16 md:min-h-[720px] md:py-20 lg:min-h-[780px]">
+        <div className="max-w-3xl text-paper">
+          <div className="flex items-center gap-2">
+            <span className="relative inline-flex h-2 w-2 items-center justify-center">
+              <span className="absolute h-2 w-2 animate-ping rounded-full bg-paper opacity-40" />
+              <span className="relative h-1.5 w-1.5 rounded-full bg-paper" />
+            </span>
+            <span className="text-xs uppercase tracking-[0.2em] text-paper/80">
+              Independent · Editorial · Sourced
+            </span>
           </div>
 
-          <ParallaxImage
-            wrapperClassName="relative hidden aspect-square overflow-hidden rounded-2xl shadow-raised lg:block"
-            src="/generated/hero-molecular.png"
-            alt="Abstract molecular rendering"
-            priority
-            sizes="(min-width: 1024px) 40vw, 100vw"
-            intensity={30}
-          />
+          <h1 className="mt-8 font-serif text-[clamp(2.5rem,6vw,5rem)] leading-[1.02] tracking-tight">
+            Research peptides.
+            <br />
+            Compare providers.
+            <br />
+            <span className="text-paper/80">Decide with confidence.</span>
+          </h1>
+
+          <p className="mt-7 max-w-readable text-lg leading-relaxed text-paper/80">
+            The calm, structured reference for peptide research and provider discovery. Sourced
+            summaries, clinically reviewed pages, and a curated directory of credible clinics.
+          </p>
+
+          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
+            <Magnetic strength={0.2}>
+              <Button
+                asChild
+                size="lg"
+                className="gap-2 bg-paper text-ink hover:bg-paper/90"
+              >
+                <Link href="/match">
+                  Find a provider
+                  <ArrowRight aria-hidden className="h-4 w-4" />
+                </Link>
+              </Button>
+            </Magnetic>
+            <Button
+              asChild
+              size="lg"
+              variant="ghost"
+              className="text-paper hover:bg-paper/10 hover:text-paper"
+            >
+              <Link href="/peptides" className="gap-2">
+                Browse the library
+                <ArrowRight aria-hidden className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
+
+          <ul className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3 text-sm text-paper/70">
+            <li className="flex items-center gap-2">
+              <ShieldCheck aria-hidden className="h-4 w-4" />
+              Clinically reviewed
+            </li>
+            <li className="flex items-center gap-2">
+              <FileText aria-hidden className="h-4 w-4" />
+              Every claim cited
+            </li>
+            <li className="flex items-center gap-2">
+              <Sparkles aria-hidden className="h-4 w-4" />
+              No pay-to-win rankings
+            </li>
+          </ul>
         </div>
       </Container>
     </section>
@@ -152,7 +168,7 @@ function TrustStrip() {
     { label: "Sources minimum per page", kind: "number", value: 2 },
   ];
   return (
-    <section aria-label="By the numbers" className="border-b border-line bg-paper-raised">
+    <section aria-label="By the numbers" className="border-b border-line bg-paper">
       <Container className="py-10">
         <dl className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-10">
           {stats.map((stat) => (
@@ -168,6 +184,140 @@ function TrustStrip() {
             </div>
           ))}
         </dl>
+      </Container>
+    </section>
+  );
+}
+
+// ─── Top Stories (WebMD-inspired editorial hero + cards) ──────────────────
+
+function TopStories() {
+  const lead = {
+    href: "/guides/calm-guide-to-peptide-research" as const,
+    eyebrow: "Cornerstone",
+    title: "A calm guide to reading peptide research",
+    excerpt:
+      "How to evaluate mechanism, the evidence ladder, and a credible provider without getting hype-pilled. The essay we send everyone first.",
+    image: "/generated/lifestyle-researcher.png",
+  };
+
+  const secondary: Array<{
+    href: Route;
+    eyebrow: string;
+    title: string;
+    image: string;
+  }> = [
+    {
+      href: "/peptides",
+      eyebrow: "Research",
+      title: "Start with the peptide library",
+      image: "/generated/lifestyle-glassware.png",
+    },
+    {
+      href: "/providers",
+      eyebrow: "Directory",
+      title: "Independently reviewed providers",
+      image: "/generated/lifestyle-consult.png",
+    },
+    {
+      href: "/match",
+      eyebrow: "Matching",
+      title: "A short list for your research",
+      image: "/generated/lifestyle-wellness.png",
+    },
+  ];
+
+  return (
+    <section aria-labelledby="top-stories" className="border-b border-line bg-paper-raised">
+      <Container className="py-20">
+        <Reveal>
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand">
+                Today&rsquo;s research
+              </p>
+              <h2 id="top-stories" className="mt-2 font-serif text-display-lg text-ink">
+                Where to start
+              </h2>
+            </div>
+            <Link
+              href="/guides"
+              className="text-sm font-medium text-ink hover:text-brand"
+            >
+              Browse the editorial hub →
+            </Link>
+          </div>
+        </Reveal>
+
+        <div className="mt-10 grid gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-12">
+          {/* Lead story */}
+          <Reveal>
+            <Link
+              href={lead.href}
+              className="group block overflow-hidden rounded-2xl bg-paper shadow-card transition-shadow hover:shadow-raised"
+            >
+              <div className="relative aspect-[16/10] overflow-hidden bg-paper-sunken">
+                <Image
+                  src={lead.image}
+                  alt=""
+                  fill
+                  sizes="(min-width: 1024px) 55vw, 100vw"
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
+                />
+                <div
+                  aria-hidden
+                  className="absolute inset-0 bg-gradient-to-t from-ink/35 via-transparent to-transparent"
+                />
+              </div>
+              <div className="p-8">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand">
+                  {lead.eyebrow}
+                </p>
+                <h3 className="mt-3 font-serif text-3xl leading-tight text-ink group-hover:text-brand md:text-[2.25rem]">
+                  {lead.title}
+                </h3>
+                <p className="mt-4 max-w-readable text-ink-muted">{lead.excerpt}</p>
+                <span className="mt-6 inline-flex items-center gap-1 text-sm font-medium text-ink group-hover:text-brand">
+                  Read the essay
+                  <ArrowRight
+                    aria-hidden
+                    className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5"
+                  />
+                </span>
+              </div>
+            </Link>
+          </Reveal>
+
+          {/* Secondary stack */}
+          <div className="flex flex-col gap-6">
+            {secondary.map((story, i) => (
+              <Reveal key={story.href} delay={i * 0.05}>
+                <Link
+                  href={story.href}
+                  className="group grid grid-cols-[140px_minmax(0,1fr)] items-stretch gap-4 overflow-hidden rounded-xl bg-paper shadow-card transition-shadow hover:shadow-raised sm:grid-cols-[160px_minmax(0,1fr)]"
+                >
+                  <div className="relative aspect-square overflow-hidden bg-paper-sunken">
+                    <Image
+                      src={story.image}
+                      alt=""
+                      fill
+                      sizes="(min-width: 640px) 160px, 140px"
+                      className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.05]"
+                    />
+                  </div>
+                  <div className="flex flex-col justify-center py-4 pr-6">
+                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-brand">
+                      {story.eyebrow}
+                    </p>
+                    <h3 className="mt-2 font-serif text-lg leading-tight text-ink group-hover:text-brand md:text-xl">
+                      {story.title}
+                    </h3>
+                  </div>
+                </Link>
+              </Reveal>
+            ))}
+          </div>
+        </div>
       </Container>
     </section>
   );
@@ -216,7 +366,7 @@ function ExploreByCategory() {
       name: "Longevity peptides",
       description: "Epitalon, GHK-Cu, and the broader healthspan conversation.",
       Icon: ShieldCheck,
-      image: "/generated/cat-longevity.png",
+      image: "/generated/lifestyle-walk.png",
     },
     {
       slug: "healing-repair",
@@ -232,7 +382,7 @@ function ExploreByCategory() {
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div className="max-w-readable">
-              <p className="text-xs uppercase tracking-wider text-ink-subtle">Explore</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand">Explore</p>
               <h2 id="explore" className="mt-2 font-serif text-display-lg text-ink">
                 Start with a category
               </h2>
@@ -300,7 +450,9 @@ function FeaturedPeptides({ peptides }: { peptides: PeptideSummary[] }) {
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="text-xs uppercase tracking-wider text-ink-subtle">Peptide library</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand">
+                Peptide library
+              </p>
               <h2 id="featured-peptides" className="mt-2 font-serif text-display-lg text-ink">
                 Start with the fundamentals
               </h2>
@@ -344,14 +496,44 @@ function HowItWorks() {
     },
   ];
   return (
-    <section aria-labelledby="how" className="border-b border-line">
+    <section aria-labelledby="how" className="relative border-b border-line">
       <Container className="py-20">
         <Reveal>
-          <div className="max-w-readable">
-            <p className="text-xs uppercase tracking-wider text-ink-subtle">How to use PeptideNexa</p>
-            <h2 id="how" className="mt-2 font-serif text-display-lg text-ink">
-              From first question to credible provider
-            </h2>
+          <div className="grid items-center gap-10 lg:grid-cols-[1fr_1fr] lg:gap-20">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand">
+                How to use PeptideNexa
+              </p>
+              <h2 id="how" className="mt-2 font-serif text-display-lg text-ink">
+                From first question to credible provider
+              </h2>
+              <p className="mt-5 text-ink-muted">
+                Three deliberate steps. None of them involve handing you a prescription you
+                can&rsquo;t source or a list of clinics bought by the highest bidder.
+              </p>
+              <Magnetic strength={0.2}>
+                <Button asChild size="lg" className="mt-8 gap-2">
+                  <Link href="/match">
+                    Start with the matching quiz
+                    <ArrowRight aria-hidden className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </Magnetic>
+            </div>
+
+            <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-paper-sunken shadow-card">
+              <Image
+                src="/generated/lifestyle-library.png"
+                alt=""
+                fill
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                className="object-cover"
+              />
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-gradient-to-t from-ink/40 via-transparent to-transparent"
+              />
+            </div>
           </div>
         </Reveal>
 
@@ -371,17 +553,6 @@ function HowItWorks() {
             </Reveal>
           ))}
         </ol>
-
-        <Reveal delay={0.18}>
-          <div className="mt-10">
-            <Button asChild size="lg" className="gap-2">
-              <Link href="/match">
-                Start with the matching quiz
-                <ArrowRight aria-hidden className="h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
-        </Reveal>
       </Container>
     </section>
   );
@@ -397,13 +568,15 @@ function FeaturedProviders({ providers }: { providers: ProviderSummary[] }) {
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div>
-              <p className="text-xs uppercase tracking-wider text-ink-subtle">Provider directory</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand">
+                Provider directory
+              </p>
               <h2 id="featured-providers" className="mt-2 font-serif text-display-lg text-ink">
                 Independently reviewed providers
               </h2>
               <p className="mt-4 max-w-readable text-ink-muted">
-                Every provider on PeptideNexa is reviewed by our editorial team. Featured placements
-                are clearly labeled — they pay for visibility, not ranking.
+                Every provider on PeptideNexa is reviewed by our editorial team. Featured
+                placements are clearly labeled — they pay for visibility, not ranking.
               </p>
             </div>
             <Link href="/providers" className="text-sm font-medium text-ink hover:text-brand">
@@ -438,7 +611,7 @@ function EditorialSpotlight() {
             >
               <Image
                 src="/generated/editorial-spotlight.png"
-                alt="Research notebook and lab flask still life"
+                alt=""
                 fill
                 sizes="(min-width: 1024px) 40vw, 100vw"
                 className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
@@ -458,7 +631,9 @@ function EditorialSpotlight() {
 
           <Reveal delay={0.06}>
             <div className="flex h-full flex-col justify-center">
-              <p className="text-xs uppercase tracking-wider text-ink-subtle">From the essay</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand">
+                From the essay
+              </p>
               <h2 id="editorial" className="mt-2 font-serif text-display-lg text-ink">
                 How to read peptide research without getting hype-pilled
               </h2>
@@ -520,7 +695,7 @@ function HomeFaq() {
         <Reveal>
           <div className="grid gap-10 lg:grid-cols-[1fr_2fr] lg:gap-20">
             <div>
-              <p className="text-xs uppercase tracking-wider text-ink-subtle">FAQ</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand">FAQ</p>
               <h2 id="home-faq" className="mt-2 font-serif text-display-lg text-ink">
                 Common questions
               </h2>
@@ -551,7 +726,9 @@ function MethodologyBand() {
         <div className="grid gap-10 md:grid-cols-[1fr_2fr]">
           <Reveal>
             <div>
-              <p className="text-xs uppercase tracking-wider text-ink-subtle">How we work</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-brand">
+                How we work
+              </p>
               <h2 id="methodology" className="mt-2 font-serif text-display-md text-ink">
                 Trust is a product feature, not a footer link.
               </h2>
@@ -590,23 +767,41 @@ function MethodologyBand() {
 
 function NewsletterBand() {
   return (
-    <section aria-labelledby="newsletter" className="bg-paper-sunken">
-      <Container className="py-20">
+    <section aria-labelledby="newsletter" className="relative isolate overflow-hidden bg-ink">
+      <div className="absolute inset-0">
+        <Image
+          src="/generated/lifestyle-walk.png"
+          alt=""
+          fill
+          sizes="100vw"
+          className="object-cover opacity-40"
+        />
+        <div aria-hidden className="absolute inset-0 bg-gradient-to-r from-ink via-ink/80 to-ink/50" />
+      </div>
+
+      <Container className="relative py-20">
         <div className="grid gap-10 md:grid-cols-[1fr_1fr]">
           <Reveal>
-            <div>
-              <p className="text-xs uppercase tracking-wider text-ink-subtle">Research digest</p>
-              <h2 id="newsletter" className="mt-2 font-serif text-display-md text-ink">
+            <div className="text-paper">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-paper/80">
+                Research digest
+              </p>
+              <h2
+                id="newsletter"
+                className="mt-2 font-serif text-display-md text-paper"
+              >
                 Short, careful updates. No hype.
               </h2>
-              <p className="mt-4 max-w-readable text-ink-muted">
+              <p className="mt-4 max-w-readable text-paper/80">
                 A monthly dispatch on peptide research, provider news, and category shifts. Written
                 by our editorial team, not a content mill.
               </p>
             </div>
           </Reveal>
           <Reveal delay={0.06}>
-            <NewsletterForm source="homepage" />
+            <div className="rounded-lg bg-paper p-6 shadow-raised">
+              <NewsletterForm source="homepage" />
+            </div>
           </Reveal>
         </div>
       </Container>
