@@ -54,10 +54,8 @@ export function TableOfContents({ items, className }: TableOfContentsProps) {
 
   return (
     <nav aria-label="On this page" className={cn("text-sm", className)}>
-      <p className="text-xs font-semibold uppercase tracking-wider text-ink-subtle">
-        On this page
-      </p>
-      <ol className="mt-4 space-y-1.5 border-l border-line">
+      <p className="eyebrow">On this page</p>
+      <ol className="mt-4 space-y-1 border-l border-line">
         {items.map((item) => {
           const isActive = activeId === item.id;
           return (
@@ -66,11 +64,11 @@ export function TableOfContents({ items, className }: TableOfContentsProps) {
                 href={`#${item.id}`}
                 aria-current={isActive ? "true" : undefined}
                 className={cn(
-                  "-ml-px flex border-l border-transparent py-1 pl-4 pr-2 transition-colors",
+                  "-ml-px flex border-l border-transparent py-1.5 pl-4 pr-2 leading-snug transition-colors duration-sm focus-ring rounded-sm",
                   item.level === 3 && "pl-7",
                   isActive
-                    ? "border-brand font-medium text-ink"
-                    : "text-ink-muted hover:text-ink",
+                    ? "border-brand font-medium text-ink-strong"
+                    : "text-ink-muted hover:text-ink-strong",
                 )}
               >
                 {item.text}

@@ -4,28 +4,71 @@
 
 @layer base {
   :root {
-    /* Paper / ink */
-    --paper: 40 33% 97%;
+    /* ————— Surface ————— */
+    --paper: 210 25% 99%;
     --paper-raised: 0 0% 100%;
-    --paper-sunken: 40 20% 94%;
-    --ink: 220 29% 9%;
-    --ink-muted: 220 10% 35%;
-    --ink-subtle: 220 8% 52%;
-    --line: 220 14% 89%;
+    --paper-sunken: 220 22% 97%;
+    --paper-inverse: 216 55% 7%;
 
-    /* Brand — deep pharmacy green */
-    --brand: 165 72% 21%;
-    --brand-muted: 165 30% 40%;
-    --brand-contrast: 40 33% 97%;
+    /* ————— Ink (text) ————— */
+    --ink: 216 46% 10%;
+    --ink-strong: 216 55% 6%;
+    --ink-muted: 218 18% 34%;
+    --ink-subtle: 220 12% 54%;
+    --ink-faint: 220 10% 72%;
+    --ink-inverse: 0 0% 100%;
 
-    /* Signal — muted warm */
-    --signal: 32 54% 51%;
-    --signal-muted: 32 40% 65%;
+    /* ————— Line / border ————— */
+    --line: 220 16% 90%;
+    --line-strong: 220 18% 80%;
+    --line-inverse: 216 30% 22%;
 
-    --danger: 0 72% 45%;
-    --success: 152 52% 32%;
+    /* ————— Brand: muted medical blue ————— */
+    --brand: 208 44% 38%;
+    --brand-deep: 212 52% 22%;
+    --brand-soft: 208 44% 94%;
+    --brand-muted: 208 28% 48%;
+    --brand-contrast: 0 0% 100%;
 
-    --radius: 0.5rem;
+    /* ————— Accent: sage mineral (editorial emphasis) ————— */
+    --accent: 128 14% 52%;
+    --accent-soft: 128 18% 94%;
+
+    /* ————— Signal: warm coral (featured flags / labeled commerce) ————— */
+    --signal: 24 60% 50%;
+    --signal-muted: 24 48% 68%;
+    --signal-soft: 24 60% 96%;
+
+    /* ————— Semantic states ————— */
+    --success: 150 32% 36%;
+    --warning: 34 60% 44%;
+    --danger: 4 58% 44%;
+    --info: 208 44% 38%;
+
+    /* ————— Focus ring ————— */
+    --ring: 208 54% 48%;
+
+    /* ————— Geometry ————— */
+    --radius-sm: 2px;
+    --radius: 4px;
+    --radius-md: 6px;
+    --radius-lg: 8px;
+    --radius-xl: 12px;
+
+    /* ————— Elevation (cool-blue undertone) ————— */
+    --shadow-1: 0 1px 2px hsl(216 40% 12% / 0.04);
+    --shadow-2: 0 2px 6px hsl(216 40% 12% / 0.05), 0 1px 2px hsl(216 40% 12% / 0.04);
+    --shadow-3: 0 8px 22px hsl(216 40% 12% / 0.08), 0 2px 6px hsl(216 40% 12% / 0.05);
+    --shadow-4: 0 18px 44px hsl(216 40% 12% / 0.12), 0 4px 12px hsl(216 40% 12% / 0.06);
+    --shadow-inset: inset 0 1px 0 hsl(216 40% 12% / 0.04);
+
+    /* ————— Motion ————— */
+    --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+    --ease-emphasized: cubic-bezier(0.2, 0, 0.1, 1);
+    --dur-xs: 120ms;
+    --dur-sm: 180ms;
+    --dur-md: 260ms;
+    --dur-lg: 420ms;
   }
 
   html {
@@ -36,7 +79,7 @@
   body {
     @apply bg-paper font-sans text-ink antialiased;
     text-rendering: optimizeLegibility;
-    font-feature-settings: "ss01", "cv11";
+    font-feature-settings: "ss01", "cv11", "cv04";
   }
 
   :focus-visible {
@@ -44,25 +87,33 @@
   }
 
   ::selection {
-    @apply bg-brand/20 text-ink;
+    @apply bg-brand/15 text-ink;
+  }
+
+  hr {
+    @apply border-0 border-t border-line;
   }
 }
 
 @layer components {
+  /* ———— Editorial prose ———— */
   .prose-editorial {
     @apply text-[17px] leading-[1.7] text-ink;
   }
   .prose-editorial h2 {
-    @apply mt-12 font-serif text-display-md text-ink;
+    @apply mt-12 scroll-mt-28 font-serif text-display-md text-ink-strong;
   }
   .prose-editorial h3 {
-    @apply mt-8 font-serif text-2xl text-ink;
+    @apply mt-8 scroll-mt-28 font-serif text-2xl text-ink-strong;
+  }
+  .prose-editorial h4 {
+    @apply mt-6 scroll-mt-24 font-sans text-lg font-medium text-ink-strong;
   }
   .prose-editorial p {
     @apply mt-5;
   }
   .prose-editorial a {
-    @apply text-brand underline decoration-brand/40 underline-offset-4 transition-colors hover:decoration-brand;
+    @apply text-brand underline decoration-brand/35 underline-offset-[3px] transition-colors hover:decoration-brand;
   }
   .prose-editorial ul,
   .prose-editorial ol {
@@ -75,12 +126,94 @@
     @apply list-decimal;
   }
   .prose-editorial blockquote {
-    @apply mt-6 border-l-2 border-brand pl-5 font-serif text-xl italic text-ink-muted;
+    @apply mt-6 border-l-2 border-accent pl-5 font-serif text-xl italic text-ink-muted;
   }
   .prose-editorial code {
-    @apply rounded-sm bg-paper-sunken px-1 py-0.5 font-mono text-[0.9em] text-ink;
+    @apply rounded-sm bg-paper-sunken px-1.5 py-0.5 font-mono text-[0.88em] text-ink;
   }
   .prose-editorial hr {
     @apply my-10 border-line;
+  }
+  .prose-editorial figure {
+    @apply my-8;
+  }
+  .prose-editorial figcaption {
+    @apply mt-3 font-sans text-sm text-ink-subtle;
+  }
+  /* Auto-inserted anchor links from rehype-autolink-headings. Hidden by
+     default, revealed on hover/focus of the heading so every h2/h3 has a
+     shareable deep link without cluttering the reading surface. */
+  .prose-editorial h2 > .heading-anchor,
+  .prose-editorial h3 > .heading-anchor,
+  .prose-editorial h4 > .heading-anchor {
+    @apply ml-2 inline-flex text-ink-subtle opacity-0 transition-opacity duration-sm;
+    text-decoration: none;
+  }
+  .prose-editorial h2 > .heading-anchor::before,
+  .prose-editorial h3 > .heading-anchor::before,
+  .prose-editorial h4 > .heading-anchor::before {
+    content: "#";
+  }
+  .prose-editorial h2:hover > .heading-anchor,
+  .prose-editorial h2:focus-within > .heading-anchor,
+  .prose-editorial h3:hover > .heading-anchor,
+  .prose-editorial h3:focus-within > .heading-anchor,
+  .prose-editorial h4:hover > .heading-anchor,
+  .prose-editorial h4:focus-within > .heading-anchor {
+    @apply opacity-100;
+  }
+
+  /* ———— Eyebrow / label ———— */
+  .eyebrow {
+    @apply font-sans text-[11px] font-medium uppercase tracking-[0.14em] text-ink-subtle;
+  }
+
+  /* ———— Hairline rule (editorial rhythm) ———— */
+  .rule-row {
+    @apply border-t border-line;
+  }
+
+  /* ———— Focus ring replacement for interactive elements ———— */
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70 focus-visible:ring-offset-2 focus-visible:ring-offset-paper;
+  }
+
+  /* ———— Inverse surface (for dark sections) ———— */
+  .surface-inverse {
+    @apply bg-paper-inverse text-ink-inverse;
+  }
+  .surface-inverse .eyebrow {
+    @apply text-paper/60;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+
+  /* Hairline border helpers */
+  .border-hair {
+    border-width: 1px;
+    border-color: hsl(var(--line));
+  }
+  .border-hair-strong {
+    border-width: 1px;
+    border-color: hsl(var(--line-strong));
+  }
+
+  /* Respect reduced motion globally */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

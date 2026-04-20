@@ -10,7 +10,6 @@ import { DisclaimerBanner } from "@/components/content/disclaimer-banner";
 import { HeroPattern } from "@/components/content/hero-pattern";
 import { Reveal } from "@/components/content/reveal";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { getLeadResult } from "@/lib/db/loaders/lead";
 
@@ -48,42 +47,44 @@ export default async function MatchResultPage({
             ]}
           />
 
-          <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-success/30 bg-success/10 px-3 py-1 text-xs font-medium text-success">
-            <CheckCircle2 aria-hidden className="h-3.5 w-3.5" />
+          <div className="mt-6 inline-flex items-center gap-2 rounded-sm border border-success/30 bg-success/10 px-2.5 py-1 text-[11px] font-medium uppercase tracking-[0.1em] text-success">
+            <CheckCircle2 aria-hidden className="h-3 w-3" />
             Request received
           </div>
 
-          <h1 className="mt-5 max-w-3xl font-serif text-display-xl text-ink">
+          <h1 className="mt-5 max-w-3xl font-serif text-display-xl text-ink-strong text-balance">
             {result.name ? `Thanks, ${result.name}. ` : "Thanks. "}
             Here&rsquo;s who we&rsquo;ve matched for you.
           </h1>
 
-          <p className="mt-6 max-w-readable text-lg text-ink-muted">
+          <p className="mt-6 max-w-readable text-lg leading-relaxed text-ink-muted">
             Based on what you shared
             {result.locationState ? ` from ${result.locationState}` : ""}, these providers are the
             closest fit. We&rsquo;ve sent them your details and you&rsquo;ll hear from them directly.
           </p>
 
           <dl className="mt-8 grid gap-4 text-sm text-ink-muted sm:grid-cols-3">
-            <div className="flex items-start gap-2">
-              <Mail aria-hidden className="mt-0.5 h-4 w-4 text-brand" />
+            <div className="flex items-start gap-2.5">
+              <Mail aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
               <div>
-                <dt className="text-xs uppercase tracking-wider text-ink-subtle">Contact email</dt>
-                <dd className="mt-0.5 text-ink">{result.email}</dd>
+                <dt className="eyebrow">Contact email</dt>
+                <dd className="mt-1 font-medium text-ink-strong">{result.email}</dd>
               </div>
             </div>
-            <div className="flex items-start gap-2">
-              <Clock3 aria-hidden className="mt-0.5 h-4 w-4 text-brand" />
+            <div className="flex items-start gap-2.5">
+              <Clock3 aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
               <div>
-                <dt className="text-xs uppercase tracking-wider text-ink-subtle">Response time</dt>
-                <dd className="mt-0.5 text-ink">Within 2 hours, typically</dd>
+                <dt className="eyebrow">Response time</dt>
+                <dd className="mt-1 font-medium text-ink-strong">Within 2 hours, typically</dd>
               </div>
             </div>
-            <div className="flex items-start gap-2">
-              <Sparkles aria-hidden className="mt-0.5 h-4 w-4 text-brand" />
+            <div className="flex items-start gap-2.5">
+              <Sparkles aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-brand" />
               <div>
-                <dt className="text-xs uppercase tracking-wider text-ink-subtle">Next step</dt>
-                <dd className="mt-0.5 text-ink">A provider will reach out directly</dd>
+                <dt className="eyebrow">Next step</dt>
+                <dd className="mt-1 font-medium text-ink-strong">
+                  A provider will reach out directly
+                </dd>
               </div>
             </div>
           </dl>
@@ -96,10 +97,10 @@ export default async function MatchResultPage({
         ) : (
           <>
             <Reveal>
-              <div className="flex items-end justify-between gap-6">
+              <div className="flex items-end justify-between gap-6 border-b border-line pb-5">
                 <div>
-                  <Badge variant="brand">Top matches</Badge>
-                  <h2 className="mt-3 font-serif text-display-md text-ink">
+                  <p className="eyebrow text-brand">Top matches</p>
+                  <h2 className="mt-2 font-serif text-display-md text-ink-strong">
                     {result.matches.length} {result.matches.length === 1 ? "provider" : "providers"}{" "}
                     matched
                   </h2>
@@ -147,12 +148,12 @@ export default async function MatchResultPage({
 function EmptyMatches() {
   return (
     <Reveal>
-      <div className="rounded-lg border border-dashed border-line bg-paper-raised p-10">
-        <Badge variant="muted">Reviewing</Badge>
-        <p className="mt-4 font-serif text-2xl text-ink">
+      <div className="rounded-md border border-dashed border-line-strong bg-paper-raised p-10">
+        <p className="eyebrow">Reviewing</p>
+        <p className="mt-3 font-serif text-2xl leading-tight text-ink-strong">
           We didn&rsquo;t find an immediate match in our directory.
         </p>
-        <p className="mt-3 max-w-readable text-ink-muted">
+        <p className="mt-3 max-w-readable leading-relaxed text-ink-muted">
           Every request is reviewed by our editorial team. If a provider on our bench looks like
           a fit, we&rsquo;ll reach out via email. Otherwise we&rsquo;ll suggest alternatives you
           can research independently.

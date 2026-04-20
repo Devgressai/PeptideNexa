@@ -62,6 +62,7 @@ export async function getLeadResult(token: string): Promise<LeadResult | null> {
               servesStates: true,
               shortDescription: true,
               priceTier: true,
+              lastVerifiedAt: true,
               peptides: { select: { peptide: { select: { slug: true } } } },
             },
           })
@@ -85,6 +86,7 @@ export async function getLeadResult(token: string): Promise<LeadResult | null> {
         shortDescription: row.shortDescription,
         priceTier: row.priceTier,
         peptideSlugs: row.peptides.map((p) => p.peptide.slug),
+        lastVerifiedAt: row.lastVerifiedAt ? row.lastVerifiedAt.toISOString() : null,
       },
     ]),
   );

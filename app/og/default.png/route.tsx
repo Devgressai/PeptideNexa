@@ -16,7 +16,7 @@ export function GET() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "64px",
-          background: "#FAF8F5",
+          background: "#FBFCFD",
           fontFamily: "serif",
         }}
       >
@@ -27,7 +27,7 @@ export function GET() {
             gap: "12px",
             fontSize: "28px",
             letterSpacing: "-0.01em",
-            color: "#0B1220",
+            color: "#0D1A2C",
           }}
         >
           <div
@@ -35,7 +35,7 @@ export function GET() {
               width: "28px",
               height: "28px",
               borderRadius: "4px",
-              background: "#0F5E4A",
+              background: "#3D6A8A",
             }}
           />
           PeptideNexa
@@ -53,7 +53,7 @@ export function GET() {
               fontSize: "72px",
               lineHeight: 1.05,
               letterSpacing: "-0.02em",
-              color: "#0B1220",
+              color: "#0D1A2C",
               maxWidth: "900px",
             }}
           >
@@ -62,7 +62,7 @@ export function GET() {
           <div
             style={{
               fontSize: "24px",
-              color: "#4a5163",
+              color: "#45516A",
               maxWidth: "800px",
             }}
           >

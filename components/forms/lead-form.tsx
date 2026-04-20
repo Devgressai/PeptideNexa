@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { FormField } from "@/components/ui/form-field";
 import {
   Select,
   SelectContent,
@@ -14,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { leadInputSchema, type LeadInput } from "@/lib/validators/lead";
 import { cn } from "@/lib/utils";
 
@@ -67,8 +68,16 @@ export function LeadForm({ source, className, defaults, compact = false }: LeadF
 
   if (status === "success") {
     return (
-      <div className={cn("rounded-lg border border-line bg-paper p-6", className)}>
-        <p className="font-serif text-lg text-ink">Thanks — we&rsquo;ll be in touch shortly.</p>
+      <div
+        className={cn(
+          "rounded-md border border-success/30 bg-success/5 p-6",
+          className,
+        )}
+      >
+        <p className="eyebrow text-success">Request received</p>
+        <p className="mt-2 font-serif text-lg text-ink-strong">
+          Thanks — we&rsquo;ll be in touch shortly.
+        </p>
         <p className="mt-2 text-sm text-ink-muted">
           We&rsquo;ll review your request and share a short list of providers that fit what you
           described. No pressure, no spam.
@@ -76,6 +85,8 @@ export function LeadForm({ source, className, defaults, compact = false }: LeadF
       </div>
     );
   }
+
+  const err = form.formState.errors;
 
   return (
     <form
@@ -91,43 +102,61 @@ export function LeadForm({ source, className, defaults, compact = false }: LeadF
       </div>
 
       <div className={cn("grid gap-4", !compact && "sm:grid-cols-2")}>
-        <Field
-          label="Email"
-          htmlFor="email"
-          error={form.formState.errors.email?.message}
-          required
-        >
+        <FormField htmlFor="email" label="Email" error={err.email?.message} required>
           <Input
             id="email"
             type="email"
             autoComplete="email"
             inputMode="email"
+            state={err.email ? "error" : "default"}
             {...form.register("email")}
           />
-        </Field>
+        </FormField>
 
-        <Field label="Name" htmlFor="name" error={form.formState.errors.name?.message}>
-          <Input id="name" autoComplete="name" {...form.register("name")} />
-        </Field>
+        <FormField htmlFor="name" label="Name" error={err.name?.message}>
+          <Input
+            id="name"
+            autoComplete="name"
+            state={err.name ? "error" : "default"}
+            {...form.register("name")}
+          />
+        </FormField>
       </div>
 
       <div className={cn("grid gap-4", !compact && "sm:grid-cols-2")}>
-        <Field label="Phone (optional)" htmlFor="phone" error={form.formState.errors.phone?.message}>
-          <Input id="phone" type="tel" autoComplete="tel" {...form.register("phone")} />
-        </Field>
+        <FormField
+          htmlFor="phone"
+          label="Phone"
+          hint="Optional"
+          error={err.phone?.message}
+        >
+          <Input
+            id="phone"
+            type="tel"
+            autoComplete="tel"
+            state={err.phone ? "error" : "default"}
+            {...form.register("phone")}
+          />
+        </FormField>
 
-        <Field label="State" htmlFor="locationState" error={form.formState.errors.locationState?.message}>
+        <FormField
+          htmlFor="locationState"
+          label="State"
+          hint="2-letter code"
+          error={err.locationState?.message}
+        >
           <Input
             id="locationState"
             maxLength={2}
             placeholder="TX"
             className="uppercase"
+            state={err.locationState ? "error" : "default"}
             {...form.register("locationState")}
           />
-        </Field>
+        </FormField>
       </div>
 
-      <Field label="Budget" htmlFor="budgetTier" error={form.formState.errors.budgetTier?.message}>
+      <FormField htmlFor="budgetTier" label="Budget" error={err.budgetTier?.message}>
         <Select
           onValueChange={(value) => form.setValue("budgetTier", value as LeadInput["budgetTier"])}
         >
@@ -140,21 +169,30 @@ export function LeadForm({ source, className, defaults, compact = false }: LeadF
             <SelectItem value="HIGH">$750+ / mo</SelectItem>
           </SelectContent>
         </Select>
-      </Field>
+      </FormField>
 
-      <Field label="Anything else we should know?" htmlFor="notes" error={form.formState.errors.notes?.message}>
-        <Textarea id="notes" rows={4} {...form.register("notes")} />
-      </Field>
+      <FormField
+        htmlFor="notes"
+        label="Anything else we should know?"
+        error={err.notes?.message}
+      >
+        <Textarea
+          id="notes"
+          rows={4}
+          state={err.notes ? "error" : "default"}
+          {...form.register("notes")}
+        />
+      </FormField>
 
-      <label className="flex items-start gap-2 text-xs text-ink-muted">
+      <label className="flex items-start gap-2 text-xs leading-relaxed text-ink-muted">
         <input
           type="checkbox"
-          className="mt-0.5 h-4 w-4 rounded border-line"
+          className="mt-0.5 h-4 w-4 rounded-sm border-line-strong accent-brand"
           {...form.register("consent")}
         />
         <span>
-          I agree to be contacted about peptide providers and understand PeptideNexa is not a medical
-          provider.
+          I agree to be contacted about peptide providers and understand PeptideNexa is not a
+          medical provider.
         </span>
       </label>
 
@@ -164,7 +202,12 @@ export function LeadForm({ source, className, defaults, compact = false }: LeadF
         </p>
       ) : null}
 
-      <Button type="submit" disabled={status === "submitting"} size="lg">
+      <Button
+        type="submit"
+        disabled={status === "submitting"}
+        size="lg"
+        variant="brand"
+      >
         {status === "submitting" ? "Submitting…" : "Request matches"}
       </Button>
 
@@ -172,30 +215,5 @@ export function LeadForm({ source, className, defaults, compact = false }: LeadF
         Educational and informational use only. Not medical advice.
       </p>
     </form>
-  );
-}
-
-type FieldProps = {
-  label: string;
-  htmlFor: string;
-  error?: string;
-  required?: boolean;
-  children: React.ReactNode;
-};
-
-function Field({ label, htmlFor, error, required, children }: FieldProps) {
-  return (
-    <div className="flex flex-col gap-1.5">
-      <Label htmlFor={htmlFor}>
-        {label}
-        {required ? <span aria-hidden className="ml-1 text-danger">*</span> : null}
-      </Label>
-      {children}
-      {error ? (
-        <p className="text-xs text-danger" role="alert">
-          {error}
-        </p>
-      ) : null}
-    </div>
   );
 }

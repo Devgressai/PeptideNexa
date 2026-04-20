@@ -150,3 +150,27 @@ export async function getPublishedPeptideSlugs(): Promise<string[]> {
     .then((rows) => rows.map((r) => r.slug))
     .catch(handle("getPublishedPeptideSlugs", [] as string[]));
 }
+
+// Hydrate a bounded set of peptide summaries from a slug list. Preserves the
+// caller's slug order so pages can keep editorial ranking. Filters to
+// PUBLISHED only so we never leak drafts via related-content rails.
+export async function getPeptideSummariesBySlugs(
+  slugs: string[],
+  limit = 3,
+): Promise<PeptideSummary[]> {
+  if (slugs.length === 0) return [];
+  const unique = Array.from(new Set(slugs)).slice(0, limit * 2);
+  return prisma.peptide
+    .findMany({
+      where: { slug: { in: unique }, status: ContentStatus.PUBLISHED },
+      select: SUMMARY_SELECT,
+    })
+    .then((rows) => {
+      const bySlug = new Map(rows.map((r) => [r.slug, toSummary(r)]));
+      return unique
+        .map((slug) => bySlug.get(slug))
+        .filter((p): p is PeptideSummary => p !== undefined)
+        .slice(0, limit);
+    })
+    .catch(handle("getPeptideSummariesBySlugs", [] as PeptideSummary[]));
+}

@@ -8,7 +8,6 @@ import { DisclaimerBanner } from "@/components/content/disclaimer-banner";
 import { HeroPattern } from "@/components/content/hero-pattern";
 import { Reveal } from "@/components/content/reveal";
 import { QuizStepper } from "@/components/match/quiz-stepper";
-import { Badge } from "@/components/ui/badge";
 import { buildMetadata } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = buildMetadata({
@@ -42,13 +41,11 @@ export default function MatchPage() {
           <Breadcrumbs
             items={[{ label: "Home", href: "/" }, { label: "Find a provider" }]}
           />
-          <Badge variant="muted" className="mt-6">
-            Matching quiz · 5 steps · ~60 seconds
-          </Badge>
-          <h1 className="mt-5 max-w-2xl font-serif text-display-xl text-ink">
+          <p className="eyebrow mt-6">Matching · 5 steps · ~60 seconds</p>
+          <h1 className="mt-3 max-w-2xl font-serif text-display-xl text-ink-strong text-balance">
             Find a peptide provider matched to what you&rsquo;re researching.
           </h1>
-          <p className="mt-6 max-w-readable text-lg text-ink-muted">
+          <p className="mt-6 max-w-readable text-lg leading-relaxed text-ink-muted">
             Tell us what you&rsquo;re researching and where you&rsquo;re located. We&rsquo;ll share
             a short list of independently reviewed providers that fit — no bulk broadcasts, no
             lead farms.
@@ -60,7 +57,7 @@ export default function MatchPage() {
         <div className="grid gap-14 lg:grid-cols-[minmax(0,1fr)_460px] lg:gap-20">
           <Reveal>
             <div className="max-w-prose">
-              <h2 className="font-serif text-display-md text-ink">How matching works</h2>
+              <h2 className="font-serif text-display-md text-ink-strong">How matching works</h2>
 
               <ol className="mt-8 space-y-6">
                 <HowItem
@@ -91,12 +88,15 @@ export default function MatchPage() {
 
           <Reveal delay={0.06}>
             <aside className="lg:sticky lg:top-24">
-              <div className="rounded-2xl border border-line bg-paper-raised p-6 shadow-raised md:p-8">
+              <div className="rounded-md border border-line bg-paper-raised p-6 shadow-e2 md:p-8">
                 <QuizStepper source="match:quiz" />
               </div>
               <p className="mt-4 px-1 text-xs text-ink-subtle">
                 Your details are shared with matched providers, never sold to brokers. See our{" "}
-                <a className="underline" href="/legal/privacy">
+                <a
+                  className="underline decoration-ink-subtle underline-offset-[3px] hover:text-ink-strong hover:decoration-ink-strong"
+                  href="/legal/privacy"
+                >
                   privacy policy
                 </a>
                 .
@@ -123,16 +123,16 @@ function HowItem({
   return (
     <li className="relative flex gap-5">
       <div className="flex-shrink-0">
-        <div className="flex h-10 w-10 items-center justify-center rounded-md border border-line bg-paper text-brand">
+        <div className="flex h-10 w-10 items-center justify-center rounded-md border border-line bg-paper-raised text-brand">
           <Icon aria-hidden className="h-5 w-5" />
         </div>
       </div>
       <div>
-        <p className="font-mono text-xs font-semibold uppercase tracking-[0.2em] text-brand">
-          {n}
+        <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-subtle">
+          Step {n}
         </p>
-        <h3 className="mt-1 font-serif text-xl text-ink">{title}</h3>
-        <p className="mt-2 text-ink-muted">{body}</p>
+        <h3 className="mt-1 font-serif text-xl leading-tight text-ink-strong">{title}</h3>
+        <p className="mt-2 leading-relaxed text-ink-muted">{body}</p>
       </div>
     </li>
   );

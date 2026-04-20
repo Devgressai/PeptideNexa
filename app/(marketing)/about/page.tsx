@@ -7,7 +7,6 @@ import { Container } from "@/components/layout/container";
 import { Breadcrumbs } from "@/components/content/breadcrumbs";
 import { HeroPattern } from "@/components/content/hero-pattern";
 import { Reveal } from "@/components/content/reveal";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { buildMetadata } from "@/lib/seo/metadata";
 
@@ -40,13 +39,11 @@ export default function AboutPage() {
 
         <Container className="relative py-14 md:py-20">
           <Breadcrumbs items={[{ label: "Home", href: "/" }, { label: "About" }]} />
-          <Badge variant="muted" className="mt-6">
-            About
-          </Badge>
-          <h1 className="mt-5 max-w-2xl font-serif text-display-xl text-ink">
+          <p className="eyebrow mt-6">About</p>
+          <h1 className="mt-3 max-w-2xl font-serif text-display-xl text-ink-strong text-balance">
             An independent reference for a category that deserves one.
           </h1>
-          <p className="mt-6 max-w-readable text-lg text-ink-muted">
+          <p className="mt-6 max-w-readable text-lg leading-relaxed text-ink-muted">
             PeptideNexa is an editorial and directory platform for peptide research and provider
             discovery. We exist because the peptide conversation online is loud, commercial, and
             too often ahead of the evidence. We&rsquo;re the cold-water counterweight.
@@ -89,15 +86,10 @@ export default function AboutPage() {
 
           <Reveal delay={0.06}>
             <aside className="flex flex-col gap-6 lg:sticky lg:top-24">
-              <div className="rounded-lg border border-line bg-paper-raised p-6">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-subtle">
-                  Commitments
-                </h3>
+              <div className="rounded-md border border-line bg-paper-raised p-6">
+                <h3 className="eyebrow">Commitments</h3>
                 <ul className="mt-4 space-y-3 text-sm text-ink-muted">
-                  <CommitmentItem
-                    Icon={FileText}
-                    label="Every claim cited"
-                  />
+                  <CommitmentItem Icon={FileText} label="Every claim cited" />
                   <CommitmentItem
                     Icon={BadgeCheck}
                     label="Clinical review before publish"
@@ -113,28 +105,37 @@ export default function AboutPage() {
                 </ul>
               </div>
 
-              <div className="rounded-lg border border-line bg-paper p-6">
-                <h3 className="font-serif text-lg text-ink">More to read</h3>
+              <div className="rounded-md border border-line bg-paper-raised p-6">
+                <h3 className="eyebrow">More to read</h3>
                 <ul className="mt-4 space-y-2 text-sm">
                   <li>
-                    <Link href="/methodology" className="text-brand hover:underline">
+                    <Link
+                      href="/methodology"
+                      className="font-medium text-ink-strong transition-colors duration-sm hover:text-brand"
+                    >
                       Methodology →
                     </Link>
                   </li>
                   <li>
-                    <Link href="/editorial-policy" className="text-brand hover:underline">
+                    <Link
+                      href="/editorial-policy"
+                      className="font-medium text-ink-strong transition-colors duration-sm hover:text-brand"
+                    >
                       Editorial policy →
                     </Link>
                   </li>
                   <li>
-                    <Link href="/for-providers" className="text-brand hover:underline">
+                    <Link
+                      href="/for-providers"
+                      className="font-medium text-ink-strong transition-colors duration-sm hover:text-brand"
+                    >
                       For providers →
                     </Link>
                   </li>
                 </ul>
 
                 <div className="mt-6">
-                  <Button asChild className="w-full">
+                  <Button asChild size="lg" variant="brand" className="w-full">
                     <Link href="/match">Find a provider</Link>
                   </Button>
                 </div>

@@ -14,7 +14,7 @@ export default function AffiliateDisclosurePage() {
   return (
     <>
       <header className="border-b border-line bg-paper">
-        <Container className="py-12">
+        <Container className="py-12 md:py-16">
           <Breadcrumbs
             items={[
               { label: "Home", href: "/" },
@@ -22,7 +22,10 @@ export default function AffiliateDisclosurePage() {
               { label: "Affiliate disclosure" },
             ]}
           />
-          <h1 className="mt-4 font-serif text-display-lg text-ink">Affiliate disclosure</h1>
+          <p className="eyebrow mt-6">Legal</p>
+          <h1 className="mt-3 font-serif text-display-lg text-ink-strong text-balance">
+            Affiliate disclosure
+          </h1>
         </Container>
       </header>
       <Container className="py-12">

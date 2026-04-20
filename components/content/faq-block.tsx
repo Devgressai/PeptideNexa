@@ -19,15 +19,18 @@ export function FaqBlock({ items, heading = "Frequently asked questions" }: FaqB
       className={hasHeading ? "mt-16" : undefined}
     >
       {hasHeading ? (
-        <h2 id="faq-heading" className="font-serif text-display-md text-ink">
+        <h2 id="faq-heading" className="font-serif text-display-md text-ink-strong">
           {heading}
         </h2>
       ) : null}
       <dl className={cn("divide-y divide-line border-y border-line", hasHeading && "mt-6")}>
         {items.map((item) => (
-          <div key={item.question} className="grid gap-2 py-5 md:grid-cols-[minmax(0,1fr)_2fr] md:gap-8">
-            <dt className="font-medium text-ink">{item.question}</dt>
-            <dd className="text-ink-muted">{item.answer}</dd>
+          <div
+            key={item.question}
+            className="grid gap-2 py-6 md:grid-cols-[minmax(0,1fr)_2fr] md:gap-10"
+          >
+            <dt className="font-medium leading-snug text-ink-strong">{item.question}</dt>
+            <dd className="leading-relaxed text-ink-muted">{item.answer}</dd>
           </div>
         ))}
       </dl>

@@ -87,5 +87,6 @@ function toSummary(row: ProviderMatchRow): ProviderSummary {
     shortDescription: row.shortDescription,
     priceTier: row.priceTier,
     peptideSlugs: row.peptides.map((p) => p.peptide.slug),
+    lastVerifiedAt: row.lastVerifiedAt ? row.lastVerifiedAt.toISOString() : null,
   };
 }

@@ -91,17 +91,17 @@ export function MobileNav({ items }: MobileNavProps) {
         <nav
           aria-label="Mobile primary"
           className={cn(
-            "absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-paper shadow-raised transition-transform duration-250 ease-out",
+            "absolute inset-y-0 right-0 flex w-full max-w-sm flex-col bg-paper-raised shadow-e4 transition-transform duration-250 ease-out",
             open ? "translate-x-0" : "translate-x-full",
           )}
         >
           <div className="flex h-16 items-center justify-between border-b border-line px-6">
-            <span className="text-xs uppercase tracking-wider text-ink-subtle">Menu</span>
+            <span className="eyebrow">Menu</span>
             <button
               type="button"
               aria-label="Close menu"
               onClick={() => setOpen(false)}
-              className="-mr-2 inline-flex h-9 w-9 items-center justify-center rounded-md text-ink-muted hover:bg-paper-sunken hover:text-ink"
+              className="-mr-2 inline-flex h-9 w-9 items-center justify-center rounded-sm text-ink-muted transition-colors duration-sm hover:bg-paper-sunken hover:text-ink-strong focus-ring"
             >
               <X aria-hidden className="h-5 w-5" />
             </button>
@@ -119,10 +119,10 @@ export function MobileNav({ items }: MobileNavProps) {
                     href={item.href}
                     aria-current={isActive ? "page" : undefined}
                     className={cn(
-                      "flex items-center justify-between rounded-md px-4 py-3 font-serif text-xl transition-colors",
+                      "flex items-center justify-between rounded-sm px-4 py-3 font-serif text-xl transition-colors duration-sm focus-ring",
                       isActive
-                        ? "bg-paper-sunken text-ink"
-                        : "text-ink-muted hover:bg-paper-sunken hover:text-ink",
+                        ? "bg-paper-sunken text-ink-strong"
+                        : "text-ink-muted hover:bg-paper-sunken hover:text-ink-strong",
                     )}
                   >
                     <span>{item.label}</span>
@@ -133,10 +133,10 @@ export function MobileNav({ items }: MobileNavProps) {
           </ul>
 
           <div className="border-t border-line p-6">
-            <Button asChild className="w-full" size="lg">
-              <Link href="/match">Find a provider</Link>
+            <Button asChild variant="brand" className="w-full" size="lg">
+              <Link href="/match">Find a match</Link>
             </Button>
-            <Button asChild variant="ghost" className="mt-2 w-full" size="lg">
+            <Button asChild variant="secondary" className="mt-2 w-full" size="lg">
               <Link href="/search">Search</Link>
             </Button>
           </div>

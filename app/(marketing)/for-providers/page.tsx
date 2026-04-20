@@ -57,8 +57,8 @@ function ProviderHero() {
 
         <div className="mt-8 grid items-center gap-14 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)] lg:gap-20">
           <div>
-            <Badge variant="brand">For clinics · compounders · telehealth</Badge>
-            <h1 className="mt-6 font-serif text-display-xl text-ink">
+            <p className="eyebrow text-brand">For clinics · compounders · telehealth</p>
+            <h1 className="mt-3 font-serif text-display-xl text-ink-strong text-balance">
               Reach readers who already did the homework.
             </h1>
             <p className="mt-6 max-w-readable text-lg leading-relaxed text-ink-muted">
@@ -97,7 +97,7 @@ function ProviderHero() {
             </ul>
           </div>
 
-          <div className="relative hidden aspect-[4/5] overflow-hidden rounded-2xl shadow-raised lg:block">
+          <div className="relative hidden aspect-[4/5] overflow-hidden rounded-lg shadow-e2 lg:block">
             <Image
               src="/generated/trust-research.png"
               alt=""
@@ -167,7 +167,7 @@ function TheProblem() {
       <Container className="py-20">
         <Reveal>
           <div className="max-w-readable">
-            <p className="text-xs uppercase tracking-wider text-ink-subtle">Why this matters</p>
+            <p className="eyebrow">Why this matters</p>
             <h2 id="problem" className="mt-2 font-serif text-display-lg text-ink">
               Peptide demand is loud.
               <br />
@@ -221,7 +221,7 @@ function TheOffer() {
       <Container className="py-20">
         <Reveal>
           <div className="max-w-readable">
-            <p className="text-xs uppercase tracking-wider text-ink-subtle">What we offer</p>
+            <p className="eyebrow">What we offer</p>
             <h2 id="offer" className="mt-2 font-serif text-display-lg text-ink">
               A high-intent channel that didn&rsquo;t exist before.
             </h2>
@@ -304,7 +304,7 @@ function PlacementTiers() {
         <Reveal>
           <div className="flex flex-wrap items-end justify-between gap-6">
             <div className="max-w-readable">
-              <p className="text-xs uppercase tracking-wider text-ink-subtle">Placement tiers</p>
+              <p className="eyebrow">Placement tiers</p>
               <h2 id="tiers" className="mt-2 font-serif text-display-lg text-ink">
                 Labeled placements.
                 <br />
@@ -326,8 +326,8 @@ function PlacementTiers() {
                 className={
                   "relative flex h-full flex-col rounded-lg border bg-paper p-8 transition-shadow " +
                   (tier.tag === "Recommended"
-                    ? "border-brand shadow-raised"
-                    : "border-line shadow-card hover:shadow-raised")
+                    ? "border-brand shadow-e2"
+                    : "border-line shadow-e1 hover:shadow-e2")
                 }
               >
                 {tier.tag ? (
@@ -407,7 +407,7 @@ function Process() {
     <section aria-labelledby="process" className="border-b border-line bg-paper-raised">
       <Container className="py-20">
         <Reveal>
-          <p className="text-xs uppercase tracking-wider text-ink-subtle">How it works</p>
+          <p className="eyebrow">How it works</p>
           <h2 id="process" className="mt-2 font-serif text-display-lg text-ink">
             From first email to first lead in under two weeks.
           </h2>
@@ -470,7 +470,7 @@ function ProviderFaq() {
         <Reveal>
           <div className="grid gap-12 lg:grid-cols-[1fr_2fr] lg:gap-20">
             <div>
-              <p className="text-xs uppercase tracking-wider text-ink-subtle">FAQ</p>
+              <p className="eyebrow">FAQ</p>
               <h2 id="partner-faq" className="mt-2 font-serif text-display-lg text-ink">
                 Questions we hear most often
               </h2>
@@ -506,7 +506,7 @@ function FinalCta() {
         <div className="grid gap-12 lg:grid-cols-[1fr_1fr] lg:gap-20">
           <Reveal>
             <div>
-              <p className="text-xs uppercase tracking-wider text-ink-subtle">Apply</p>
+              <p className="eyebrow">Apply</p>
               <h2 id="apply" className="mt-2 font-serif text-display-lg text-ink">
                 Ready to talk?
               </h2>
@@ -530,7 +530,7 @@ function FinalCta() {
           </Reveal>
 
           <Reveal delay={0.06}>
-            <div className="rounded-lg border border-line bg-paper p-8 shadow-card">
+            <div className="rounded-lg border border-line bg-paper p-8 shadow-e1">
               <LeadForm source="for-providers" compact />
             </div>
           </Reveal>

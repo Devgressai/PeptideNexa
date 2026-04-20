@@ -6,7 +6,6 @@ import { Container } from "@/components/layout/container";
 import { Breadcrumbs } from "@/components/content/breadcrumbs";
 import { HeroPattern } from "@/components/content/hero-pattern";
 import { Reveal } from "@/components/content/reveal";
-import { Badge } from "@/components/ui/badge";
 import { buildMetadata } from "@/lib/seo/metadata";
 
 export const metadata: Metadata = buildMetadata({
@@ -39,13 +38,11 @@ export default function EditorialPolicyPage() {
           <Breadcrumbs
             items={[{ label: "Home", href: "/" }, { label: "Editorial policy" }]}
           />
-          <Badge variant="muted" className="mt-6">
-            Editorial policy
-          </Badge>
-          <h1 className="mt-5 max-w-2xl font-serif text-display-xl text-ink">
+          <p className="eyebrow mt-6">Editorial policy</p>
+          <h1 className="mt-3 max-w-2xl font-serif text-display-xl text-ink-strong text-balance">
             Measured. Specific. Source-attributed.
           </h1>
-          <p className="mt-6 max-w-readable text-lg text-ink-muted">
+          <p className="mt-6 max-w-readable text-lg leading-relaxed text-ink-muted">
             The rules we hold ourselves to when we write, review, and publish.
           </p>
         </Container>
@@ -113,43 +110,47 @@ export default function EditorialPolicyPage() {
 
           <Reveal delay={0.06}>
             <aside className="flex flex-col gap-6 lg:sticky lg:top-24">
-              <div className="rounded-lg border border-line bg-paper-raised p-6">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-ink-subtle">
-                  Questions or corrections
-                </h3>
+              <div className="rounded-md border border-line bg-paper-raised p-6">
+                <h3 className="eyebrow">Questions or corrections</h3>
                 <dl className="mt-4 space-y-3 text-sm">
                   <div>
                     <dt className="text-ink-subtle">Corrections</dt>
-                    <dd className="text-ink">corrections@peptidenexa.com</dd>
+                    <dd className="font-medium text-ink-strong">corrections@peptidenexa.com</dd>
                   </div>
                   <div>
                     <dt className="text-ink-subtle">Editorial</dt>
-                    <dd className="text-ink">editorial@peptidenexa.com</dd>
+                    <dd className="font-medium text-ink-strong">editorial@peptidenexa.com</dd>
                   </div>
                   <div>
                     <dt className="text-ink-subtle">Partnerships</dt>
-                    <dd className="text-ink">partners@peptidenexa.com</dd>
+                    <dd className="font-medium text-ink-strong">partners@peptidenexa.com</dd>
                   </div>
                 </dl>
               </div>
 
-              <div className="rounded-lg border border-line bg-paper p-6">
-                <h3 className="font-serif text-lg text-ink">See also</h3>
+              <div className="rounded-md border border-line bg-paper-raised p-6">
+                <h3 className="eyebrow">See also</h3>
                 <ul className="mt-4 space-y-2 text-sm">
                   <li>
-                    <Link href="/methodology" className="text-brand hover:underline">
+                    <Link
+                      href="/methodology"
+                      className="font-medium text-ink-strong transition-colors duration-sm hover:text-brand"
+                    >
                       Methodology →
                     </Link>
                   </li>
                   <li>
-                    <Link href="/about" className="text-brand hover:underline">
+                    <Link
+                      href="/about"
+                      className="font-medium text-ink-strong transition-colors duration-sm hover:text-brand"
+                    >
                       About →
                     </Link>
                   </li>
                   <li>
                     <Link
                       href="/legal/affiliate-disclosure"
-                      className="text-brand hover:underline"
+                      className="font-medium text-ink-strong transition-colors duration-sm hover:text-brand"
                     >
                       Affiliate disclosure →
                     </Link>

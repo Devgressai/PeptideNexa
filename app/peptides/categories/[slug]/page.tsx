@@ -8,7 +8,6 @@ import { Breadcrumbs } from "@/components/content/breadcrumbs";
 import { HeroPattern } from "@/components/content/hero-pattern";
 import { Reveal } from "@/components/content/reveal";
 import { PeptideCard } from "@/components/content/peptide-card";
-import { Badge } from "@/components/ui/badge";
 import { buildMetadata } from "@/lib/seo/metadata";
 import {
   getAllCategorySlugs,
@@ -93,29 +92,34 @@ export default async function PeptideCategoryPage({
               { label: category.name },
             ]}
           />
-          <Badge variant="muted" className="mt-6">
-            Category
-          </Badge>
-          <h1 className="mt-5 max-w-2xl font-serif text-display-xl text-ink">{category.name}</h1>
+          <p className="eyebrow mt-6">Category</p>
+          <h1 className="mt-3 max-w-2xl font-serif text-display-xl text-ink-strong text-balance">
+            {category.name}
+          </h1>
           {category.description ? (
-            <p className="mt-6 max-w-readable text-lg text-ink-muted">{category.description}</p>
+            <p className="mt-6 max-w-readable text-lg leading-relaxed text-ink-muted">
+              {category.description}
+            </p>
           ) : null}
-          <p className="mt-4 text-sm text-ink-subtle">
+          <p className="mt-4 font-mono text-xs text-ink-subtle">
             {category.peptides.length}{" "}
-            {category.peptides.length === 1 ? "peptide" : "peptides"} in this category
+            {category.peptides.length === 1 ? "peptide" : "peptides"} · reviewed quarterly
           </p>
         </Container>
       </header>
 
-      <Container className="py-16">
+      <Container className="py-14 md:py-16">
         {category.peptides.length === 0 ? (
-          <div className="rounded-lg border border-dashed border-line bg-paper-raised p-10 text-center">
-            <p className="font-serif text-xl text-ink">
+          <div className="rounded-md border border-dashed border-line-strong bg-paper-raised p-12 text-center">
+            <p className="font-serif text-xl text-ink-strong">
               No peptides published in {category.name} yet.
             </p>
             <p className="mt-2 text-sm text-ink-muted">
               Editorial is working on it.{" "}
-              <Link href="/peptides" className="text-brand underline">
+              <Link
+                href="/peptides"
+                className="font-medium text-brand underline decoration-brand/35 underline-offset-[3px] hover:decoration-brand"
+              >
                 Browse the full library
               </Link>{" "}
               in the meantime.
@@ -133,15 +137,24 @@ export default async function PeptideCategoryPage({
 
         <Reveal delay={0.12}>
           <div className="mt-14 border-t border-line pt-10">
-            <p className="text-xs uppercase tracking-wider text-ink-subtle">Keep going</p>
-            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm">
-              <Link href="/peptides" className="font-medium text-ink hover:text-brand">
+            <p className="eyebrow">Keep going</p>
+            <div className="mt-4 flex flex-wrap gap-x-7 gap-y-2 text-sm">
+              <Link
+                href="/peptides"
+                className="font-medium text-ink-strong transition-colors duration-sm hover:text-brand"
+              >
                 All peptides →
               </Link>
-              <Link href="/compare" className="font-medium text-ink hover:text-brand">
+              <Link
+                href="/compare"
+                className="font-medium text-ink-strong transition-colors duration-sm hover:text-brand"
+              >
                 Comparisons →
               </Link>
-              <Link href="/match" className="font-medium text-ink hover:text-brand">
+              <Link
+                href="/match"
+                className="font-medium text-ink-strong transition-colors duration-sm hover:text-brand"
+              >
                 Find a provider →
               </Link>
             </div>
