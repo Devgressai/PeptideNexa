@@ -21,6 +21,9 @@ import { NewsletterForm } from "@/components/forms/newsletter-form";
 import { HeroPattern } from "@/components/content/hero-pattern";
 import { Reveal } from "@/components/content/reveal";
 import { FaqBlock } from "@/components/content/faq-block";
+import { Counter } from "@/components/content/counter";
+import { Magnetic } from "@/components/content/magnetic";
+import { ParallaxImage } from "@/components/content/parallax-image";
 import { buildMetadata } from "@/lib/seo/metadata";
 import type { PeptideSummary, ProviderSummary } from "@/lib/content/types";
 import { getFeaturedPeptides } from "@/lib/db/loaders/peptide";
@@ -89,12 +92,14 @@ function Hero() {
             </p>
 
             <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-              <Button asChild size="lg" className="gap-2">
-                <Link href="/match">
-                  Find a provider
-                  <ArrowRight aria-hidden className="h-4 w-4" />
-                </Link>
-              </Button>
+              <Magnetic strength={0.2}>
+                <Button asChild size="lg" className="gap-2">
+                  <Link href="/match">
+                    Find a provider
+                    <ArrowRight aria-hidden className="h-4 w-4" />
+                  </Link>
+                </Button>
+              </Magnetic>
               <Button asChild size="lg" variant="secondary">
                 <Link href="/peptides">Browse the library</Link>
               </Button>
@@ -119,20 +124,14 @@ function Hero() {
             </dl>
           </div>
 
-          <div className="relative hidden aspect-square overflow-hidden rounded-2xl shadow-raised lg:block">
-            <Image
-              src="/generated/hero-molecular.png"
-              alt="Abstract molecular rendering"
-              fill
-              priority
-              sizes="(min-width: 1024px) 40vw, 100vw"
-              className="object-cover"
-            />
-            <div
-              aria-hidden
-              className="absolute inset-0 bg-gradient-to-tr from-paper/40 via-transparent to-transparent mix-blend-soft-light"
-            />
-          </div>
+          <ParallaxImage
+            wrapperClassName="relative hidden aspect-square overflow-hidden rounded-2xl shadow-raised lg:block"
+            src="/generated/hero-molecular.png"
+            alt="Abstract molecular rendering"
+            priority
+            sizes="(min-width: 1024px) 40vw, 100vw"
+            intensity={30}
+          />
         </div>
       </Container>
     </section>
@@ -142,20 +141,30 @@ function Hero() {
 // ─── Trust strip ────────────────────────────────────────────────────────────
 
 function TrustStrip() {
-  const stats: Array<{ value: string; label: string }> = [
-    { value: "40+", label: "Peptides researched" },
-    { value: "20+", label: "Providers reviewed" },
-    { value: "Quarterly", label: "Re-verification cadence" },
-    { value: "2", label: "Sources minimum per page" },
+  type Stat =
+    | { label: string; kind: "number"; value: number; suffix?: string }
+    | { label: string; kind: "text"; value: string };
+
+  const stats: Stat[] = [
+    { label: "Peptides researched", kind: "number", value: 40, suffix: "+" },
+    { label: "Providers reviewed", kind: "number", value: 20, suffix: "+" },
+    { label: "Re-verification cadence", kind: "text", value: "Quarterly" },
+    { label: "Sources minimum per page", kind: "number", value: 2 },
   ];
   return (
     <section aria-label="By the numbers" className="border-b border-line bg-paper-raised">
-      <Container className="py-8">
+      <Container className="py-10">
         <dl className="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-10">
           {stats.map((stat) => (
             <div key={stat.label} className="flex flex-col">
               <dt className="text-xs uppercase tracking-wider text-ink-subtle">{stat.label}</dt>
-              <dd className="mt-1 font-serif text-2xl text-ink md:text-3xl">{stat.value}</dd>
+              <dd className="mt-1.5 font-serif text-3xl leading-none text-ink md:text-4xl">
+                {stat.kind === "number" ? (
+                  <Counter value={stat.value} suffix={stat.suffix} />
+                ) : (
+                  stat.value
+                )}
+              </dd>
             </div>
           ))}
         </dl>
